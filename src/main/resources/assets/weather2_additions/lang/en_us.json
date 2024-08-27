@@ -1,0 +1,9 @@
+{
+  "item.weather2_additions.tablet": "Tablet",
+  "item.weather2_additions.small_battery_block" : "Small Battery Block",
+  "itemGroup.weather2_additions.main": "Weather2 Additions",
+  "key.weather2_additions.cyclemapforward": "Cycle storm selection forwards",
+  "key.weather2_additions.cyclemapbackward": "Cycle storm selection backwards",
+  "menu.weather2_additions.smallbatteryblock": "Small Battery Block",
+  "block.weather2_additions.small_battery_block": "Small Battery Block"
+}

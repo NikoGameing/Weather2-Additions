@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "RIA",
+    "IWI",
+    "IFI"
+    ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "F": {
+      "item": "weather2:weather_forecast"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "W": {
+      "tag": "forge:glass_panes"
+    },
+    "A": {
+      "item": "weather2:anemometer"
+    }
+    },
+  "result": {
+    "item": "weather2_additions:tablet"
+  }
+}

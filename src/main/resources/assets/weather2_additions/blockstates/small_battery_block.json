@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "weather2_additions:block/small_battery_block"
+    }
+  }
+}
