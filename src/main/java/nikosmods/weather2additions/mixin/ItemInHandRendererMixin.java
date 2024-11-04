@@ -157,4 +157,3 @@ class ItemInHandRendererMixin {
 
         renderItem(transform, render, stack, combinedLight);}}
 
-/* I may be in hell */
