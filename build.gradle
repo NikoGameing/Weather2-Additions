@@ -142,8 +142,6 @@ dependencies {
 
     implementation fg.deobf("curse.maven:coroutil-${coroutil_cursemaven}")
     implementation fg.deobf("curse.maven:weather2-${weather2_cursemaven}")
-    implementation fg.deobf("maven.modrinth:first-person-model:${firstpersonmodel_modrinth}")
-    implementation fg.deobf("maven.modrinth:not-enough-animations:${notenoughanimations_modrinth}")
     runtimeOnly fg.deobf("mekanism:Mekanism:${minecraft_version}-${mekanism_version}")
     runtimeOnly fg.deobf("curse.maven:worldedit-${worldedit_cursemaven}")
 
