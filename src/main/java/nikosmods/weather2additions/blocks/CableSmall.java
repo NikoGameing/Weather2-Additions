@@ -12,11 +12,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import nikosmods.weather2additions.blocks.blockfunction.CableSmallEntity;
 import org.jetbrains.annotations.Nullable;
 
-public class Cable extends Block implements EntityBlock {
+public class CableSmall extends Block implements EntityBlock {
 
-    public Cable(Properties p_49795_) {
+    public CableSmall(Properties p_49795_) {
         super(p_49795_);
     }
+
+
 
     @Nullable
 
