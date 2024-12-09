@@ -18,9 +18,10 @@ public class CreativeTabs {
             .displayItems((parameters, output) -> {
                 output.accept(Items.TABLET.get());
                 output.accept(Items.SMALL_BATTERY_BLOCK.get());
+                output.accept(Items.CABLE_SMALL.get());
             })
             .build());
     public static void register(IEventBus eventBus) {
-        CREATIVE_MODE_TABS.register(eventBus);;
+        CREATIVE_MODE_TABS.register(eventBus);
     }
 }

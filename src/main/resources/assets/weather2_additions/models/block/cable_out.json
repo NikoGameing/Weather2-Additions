@@ -1,9 +1,9 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "block/cablecover",
-		"1": "block/inside",
-		"particle": "block/cablecover"
+		"0": "weather2_additions:block/cable_small/cablecover",
+		"1": "weather2_additions:block/cable_small/inside",
+		"particle": "weather2_additions:block/cable_small/cablecover"
 	},
 	"elements": [
 		{

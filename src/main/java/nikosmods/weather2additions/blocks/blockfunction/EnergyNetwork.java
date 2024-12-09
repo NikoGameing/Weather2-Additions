@@ -1,12 +1,18 @@
 package nikosmods.weather2additions.blocks.blockfunction;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import nikosmods.weather2additions.Weather2Additions;
+import org.slf4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EnergyNetwork {
 
-    public List<CableGenericEntity> cableEntities;
+    Logger logger = Weather2Additions.LOGGER;
+
+    public List<CableGenericEntity> cableEntities = new ArrayList<>();
     public BlockEnergyStorage energyStorage;
 
     public List<CableGenericEntity> getCableEntities() {
@@ -21,19 +27,16 @@ public class EnergyNetwork {
         this.cableEntities.addAll(cableEntities);
     }
 
-    public int getEnergyStored() {
-        return energyStorage.getEnergyStored();
+    public void removeCableEntity(CableGenericEntity cableEntity) {
+        cableEntities.remove(cableEntity);
     }
 
-    public void setEnergyStored(int stored) {
-        energyStorage.setEnergyStored(stored);
-    }
-
-    public int getMaxEnergyStored() {
-        return energyStorage.getMaxEnergyStored();
+    public BlockEnergyStorage getEnergyStorage() {
+        return energyStorage;
     }
 
     public EnergyNetwork(BlockEntity cableEntity, int capacity, int throughputIn, int throughputOut) {
+        cableEntities.add((CableGenericEntity) cableEntity);
         energyStorage = new BlockEnergyStorage(cableEntity, capacity, throughputIn, throughputOut);
     }
 

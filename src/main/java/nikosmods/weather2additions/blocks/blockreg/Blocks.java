@@ -13,7 +13,7 @@ import nikosmods.weather2additions.blocks.SmallBatteryBlock;
 public class Blocks {
     private static final DeferredRegister<Block> blocks = DeferredRegister.create(ForgeRegistries.BLOCKS, Weather2Additions.MODID);
     public static final RegistryObject<Block> SMALL_BATTERY_BLOCK = blocks.register("small_battery_block", () -> new SmallBatteryBlock(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.STONE)));
-    public static final RegistryObject<Block> CABLE = blocks.register("cable", () -> new CableSmall(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.STONE)));
+    public static final RegistryObject<Block> CABLE_SMALL = blocks.register("cable_small", () -> new CableSmall(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.STONE).noOcclusion()));
     public static void register(IEventBus modEventBus) {
         blocks.register(modEventBus);
     }

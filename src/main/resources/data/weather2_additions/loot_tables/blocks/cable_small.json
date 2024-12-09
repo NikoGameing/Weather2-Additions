@@ -11,11 +11,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "weather2_additions:small_battery_block"
+          "name": "weather2_additions:cable_small"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "weather2_additions:small_battery_block"
+  "random_sequence": "weather2_additions:cable_small"
 }

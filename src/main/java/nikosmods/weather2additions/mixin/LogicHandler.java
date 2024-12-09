@@ -1,3 +1,4 @@
+/* first person mod compat
 package nikosmods.weather2additions.mixin;
 
 import net.minecraft.world.item.ItemStack;
@@ -18,3 +19,4 @@ public abstract class LogicHandler {
         }
     }
 }
+ */

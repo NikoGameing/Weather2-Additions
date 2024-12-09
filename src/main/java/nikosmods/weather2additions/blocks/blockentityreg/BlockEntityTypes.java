@@ -13,7 +13,7 @@ public class BlockEntityTypes {
 
     private static final DeferredRegister<BlockEntityType<?>> blockEntityType = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Weather2Additions.MODID);
     public static final RegistryObject<BlockEntityType<SmallBatteryBlockEntity>> SMALL_BATTERY_BLOCK_ENTITY = blockEntityType.register("small_battery_block", () -> BlockEntityType.Builder.of(SmallBatteryBlockEntity::new, Blocks.SMALL_BATTERY_BLOCK.get()).build(null));
-    public static final RegistryObject<BlockEntityType<SmallBatteryBlockEntity>> CABLE_BLOCK_ENTITY = blockEntityType.register("cable", () -> BlockEntityType.Builder.of(SmallBatteryBlockEntity::new, Blocks.SMALL_BATTERY_BLOCK.get()).build(null));
+    public static final RegistryObject<BlockEntityType<SmallBatteryBlockEntity>> CABLE_BLOCK_ENTITY = blockEntityType.register("cable_small", () -> BlockEntityType.Builder.of(SmallBatteryBlockEntity::new, Blocks.CABLE_SMALL.get()).build(null));
     public static void register(IEventBus IeventBus) {
         blockEntityType.register(IeventBus);
     }

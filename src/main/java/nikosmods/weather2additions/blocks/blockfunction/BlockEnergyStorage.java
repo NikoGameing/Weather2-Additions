@@ -5,7 +5,7 @@ import net.minecraftforge.energy.IEnergyStorage;
 
 import java.util.List;
 
-public class BlockEnergyStorage implements IEnergyStorage, EnergyNetworkMerge {
+public class BlockEnergyStorage implements IEnergyStorage {
 
     private final int capacity;
     private final int throughputIn;
@@ -82,12 +82,4 @@ public class BlockEnergyStorage implements IEnergyStorage, EnergyNetworkMerge {
         return throughputOut;
     }
 
-    @Override
-    public BlockEnergyStorage mergeNetworkEnergy(BlockEnergyStorage energyNetwork) {
-        int capacity = this.capacity + energyNetwork.getMaxEnergyStored();
-        int stored = this.stored + energyNetwork.getEnergyStored();
-        BlockEnergyStorage blockEnergyStorage = new BlockEnergyStorage(blockEntity, capacity, throughputIn, throughputOut);
-        blockEnergyStorage.setEnergyStored(stored);
-        return blockEnergyStorage;
-    }
 }

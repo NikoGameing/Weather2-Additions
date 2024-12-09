@@ -1,0 +1,115 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "weather2_additions:block/cable_out",
+        "x": -90
+      },
+      "when": {
+        "up": "cable"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/cable_out",
+        "x": 90
+      },
+      "when": {
+        "down": "cable"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/cable_out"
+      },
+      "when": {
+        "north": "cable"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/cable_out",
+        "y": 90
+      },
+      "when": {
+        "east": "cable"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/cable_out",
+        "y": 180
+      },
+      "when": {
+        "south": "cable"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/cable_out",
+        "y": 270
+      },
+      "when": {
+        "west": "cable"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/cable_out_plug",
+        "x": -90
+      },
+      "when": {
+        "up": "connected"
+      }
+    },
+    {
+    "apply": {
+      "model": "weather2_additions:block/cable_out_plug",
+      "x": 90
+    },
+    "when": {
+      "down": "connected"
+    }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/cable_out_plug"
+      },
+      "when": {
+        "north": "connected"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/cable_out_plug",
+        "y": 90
+      },
+      "when": {
+        "east": "connected"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/cable_out_plug",
+        "y": 180
+      },
+      "when": {
+        "south": "connected"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/cable_out_plug",
+        "y": 270
+      },
+      "when": {
+        "west": "connected"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/cable_in"
+      }
+    }
+  ]
+}
