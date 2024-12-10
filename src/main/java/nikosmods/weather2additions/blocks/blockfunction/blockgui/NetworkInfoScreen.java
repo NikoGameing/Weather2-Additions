@@ -13,13 +13,13 @@ import java.util.List;
 
 public class NetworkInfoScreen extends AbstractContainerScreen<NetworkInfoMenu> {
 
-    private static final ResourceLocation texture = new ResourceLocation("weather2_additions", "textures/menu/networkinfoscreen.png");
+    private static final ResourceLocation texture = new ResourceLocation("weather2_additions", "textures/menu/networkinfomenu.png");
 
     public NetworkInfoScreen(NetworkInfoMenu containerMenu, Inventory inventory, Component component) {
         super(containerMenu, inventory, component);
         imageWidth = 176;
         imageHeight = 100;
-        inventoryLabelY = imageHeight - 94;
+        inventoryLabelX = 10000;
     }
 
     @Override
@@ -38,6 +38,17 @@ public class NetworkInfoScreen extends AbstractContainerScreen<NetworkInfoMenu> 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         renderTooltip(guiGraphics, mouseX, mouseY);
     }
+
+    @Override
+    protected void renderLabels(GuiGraphics guiGraphics, int p_282681_, int p_283686_) {
+        String throughput = formatEnergy(menu.getThroughput(), false);
+        int cables = menu.getCableNumber();
+
+        super.renderLabels(guiGraphics, p_282681_, p_283686_);
+        guiGraphics.drawString(font, "Throughput: " + throughput +"/t", 10, 44, 0x00FF00);
+        guiGraphics.drawString(font, "Number of cables: " + ((cables / 2) + 1), 10, 64, 0x00FF00);
+    }
+
 
     @Override
     protected void renderTooltip(GuiGraphics guiGraphics, int posX, int posY) {
@@ -65,9 +76,13 @@ public class NetworkInfoScreen extends AbstractContainerScreen<NetworkInfoMenu> 
                     posY);
         }
     }
+
+
     private int rgbToHex(int r, int g, int b) {
         return r << 16 | g << 8 | b;
     }
+
+
     private static String formatEnergy(int energy, Boolean addSymbol) {
         String formatted = energy + "RF";
         int energyNormal = energy;

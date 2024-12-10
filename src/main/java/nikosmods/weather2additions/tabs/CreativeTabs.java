@@ -19,6 +19,7 @@ public class CreativeTabs {
                 output.accept(Items.TABLET.get());
                 output.accept(Items.SMALL_BATTERY_BLOCK.get());
                 output.accept(Items.CABLE_SMALL.get());
+                output.accept(Items.ANALYSER.get());
             })
             .build());
     public static void register(IEventBus eventBus) {

@@ -39,5 +39,4 @@ public class EnergyNetwork {
         cableEntities.add((CableGenericEntity) cableEntity);
         energyStorage = new BlockEnergyStorage(cableEntity, capacity, throughputIn, throughputOut);
     }
-
 }

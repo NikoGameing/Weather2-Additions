@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -20,6 +21,8 @@ import nikosmods.weather2additions.Weather2Additions;
 import nikosmods.weather2additions.blocks.CableSmall;
 import nikosmods.weather2additions.blocks.blockentityreg.BlockEntityTypes;
 import nikosmods.weather2additions.blocks.blockfunction.blockgui.NetworkInfoMenu;
+import nikosmods.weather2additions.network.AnalyserPacket;
+import nikosmods.weather2additions.network.Messages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -86,7 +89,6 @@ public abstract class CableGenericEntity extends BlockEntity implements MenuProv
             combinedNetwork.getEnergyStorage().setEnergyStored(stored);
             combinedNetwork.setCableEntities(energyNetwork.getCableEntities());
             combinedNetwork.setCableEntities(otherNetwork.getCableEntities());
-            energyNetwork = combinedNetwork;
             for (CableGenericEntity cableGeneric : energyNetwork.getCableEntities()) {
                 cableGeneric.energyNetwork = combinedNetwork;
             }
@@ -97,7 +99,7 @@ public abstract class CableGenericEntity extends BlockEntity implements MenuProv
     }
 
     public void splitNetwork() {
-        energyNetwork.getCableEntities().forEach(cableGeneric -> cableGeneric.createNetwork(cableGeneric.capacity, cableGeneric.throughputIn, cableGeneric.throughputOut, (energyNetwork.getEnergyStorage().getEnergyStored() / energyNetwork.getEnergyStorage().getMaxEnergyStored() * cableGeneric.capacity)));
+        energyNetwork.getCableEntities().forEach(cableGeneric -> cableGeneric.createNetwork(cableGeneric.capacity, cableGeneric.throughputIn, cableGeneric.throughputOut, ((int) ((double) energyNetwork.getEnergyStorage().getEnergyStored() / (double) energyNetwork.getEnergyStorage().getMaxEnergyStored() * cableGeneric.capacity))));
     }
 
     public void createNetwork(int capacity, int throughputIn, int throughputOut, int stored) {
@@ -138,13 +140,14 @@ public abstract class CableGenericEntity extends BlockEntity implements MenuProv
     }
 
     @Override
-    public Component getDisplayName() {
+    public @NotNull Component getDisplayName() {
         return Component.translatable("menu.weather2_additions.networkinfoscreen");
     }
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+    public AbstractContainerMenu createMenu(int i, @NotNull Inventory inventory, @NotNull Player player) {
+        Messages.sendToClient(new AnalyserPacket(getEnergyNetwork().getEnergyStorage().getEnergyStored(), getEnergyNetwork().getEnergyStorage().getMaxEnergyStored(), getEnergyNetwork().getEnergyStorage().getThroughputIn(), getEnergyNetwork().getCableEntities().size()), (ServerPlayer) player);
         return new NetworkInfoMenu(i, inventory, this, true);
     }
 }

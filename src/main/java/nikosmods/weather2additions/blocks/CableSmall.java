@@ -25,7 +25,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
 import nikosmods.weather2additions.blocks.blockfunction.CableGenericEntity;
 import nikosmods.weather2additions.blocks.blockfunction.CableSmallEntity;
-import nikosmods.weather2additions.blocks.blockfunction.SmallBatteryBlockEntity;
 import nikosmods.weather2additions.items.itemreg.Items;
 import org.jetbrains.annotations.NotNull;
 
@@ -64,7 +63,7 @@ public class CableSmall extends Block implements EntityBlock {
 
     @Override
     public BlockEntity newBlockEntity(@NotNull BlockPos blockPos, @NotNull BlockState blockState) {
-        return new CableSmallEntity(blockPos, blockState, 2000, 2000, 200);
+        return new CableSmallEntity(blockPos, blockState, 2000, 2000, 2000);
     }
 
     @Override
@@ -126,10 +125,11 @@ public class CableSmall extends Block implements EntityBlock {
 
     @Override
     public @NotNull InteractionResult use(BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        if (!level.isClientSide && player.getMainHandItem().getItem() == Items.ANALYSER.get()) {
+        if (!level.isClientSide && player.getMainHandItem().getItem() == Items.ANALYSER.get() && level.getBlockEntity(blockPos) instanceof CableGenericEntity) {
             NetworkHooks.openScreen((ServerPlayer) player, (CableGenericEntity) level.getBlockEntity(blockPos), blockPos);
+            return InteractionResult.sidedSuccess(level.isClientSide());
         }
-        return InteractionResult.sidedSuccess(level.isClientSide());
+        return InteractionResult.PASS;
     }
 
     @Override

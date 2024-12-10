@@ -8,25 +8,31 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import nikosmods.weather2additions.blocks.blockfunction.CableGenericEntity;
 import nikosmods.weather2additions.blocks.blockreg.Blocks;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public class NetworkInfoMenu extends AbstractContainerMenu {
-    int capacity;
-    int maxCapacity;
-    int throughput;
-    int cableNumber;
+    static int capacity;
+    static int maxCapacity;
+    static int throughput;
+    static int cableNumber;
     CableGenericEntity cableGeneric;
 
     public NetworkInfoMenu(int containerID, Inventory inventory, CableGenericEntity cableGeneric, boolean server) {
         super(MenuTypes.NETWORK_INFO_MENU.get(), containerID);
         this.cableGeneric = cableGeneric;
-        capacity = cableGeneric.getEnergyNetwork().energyStorage.getEnergyStored();
-        maxCapacity = cableGeneric.getEnergyNetwork().energyStorage.getMaxEnergyStored();
-        throughput = cableGeneric.getEnergyNetwork().getEnergyStorage().getThroughputIn();
-        cableNumber = cableGeneric.getEnergyNetwork().getCableEntities().size();
     }
 
     public NetworkInfoMenu(int containerID, Inventory inventory, FriendlyByteBuf byteBuffer) {
         this(containerID, inventory, (CableGenericEntity) inventory.player.level().getBlockEntity(byteBuffer.readBlockPos()), false);
+    }
+
+    public static void setAll(int capacity, int maxCapacity, int throughput, int cableNumber) {
+        NetworkInfoMenu.capacity = capacity;
+        NetworkInfoMenu.maxCapacity = maxCapacity;
+        NetworkInfoMenu.throughput = throughput;
+        NetworkInfoMenu.cableNumber = cableNumber;
     }
 
     public int getCapacity() {
@@ -43,12 +49,16 @@ public class NetworkInfoMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public ItemStack quickMoveStack(Player player, int i) {
+    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int i) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public boolean stillValid(Player player) {
-        return stillValid(ContainerLevelAccess.create(cableGeneric.getLevel(), cableGeneric.getBlockPos()), player, Blocks.SMALL_BATTERY_BLOCK.get());
+    public boolean stillValid(@NotNull Player player) {
+        capacity = cableGeneric.getEnergyNetwork().getEnergyStorage().getEnergyStored();
+        maxCapacity = cableGeneric.getEnergyNetwork().getEnergyStorage().getMaxEnergyStored();
+        throughput = cableGeneric.getEnergyNetwork().getEnergyStorage().getThroughputIn();
+        cableNumber = cableGeneric.getEnergyNetwork().getCableEntities().size();
+        return stillValid(ContainerLevelAccess.create(Objects.requireNonNull(cableGeneric.getLevel()), cableGeneric.getBlockPos()), player, Blocks.CABLE_SMALL.get());
     }
 }

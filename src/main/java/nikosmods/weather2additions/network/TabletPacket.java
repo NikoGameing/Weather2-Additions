@@ -8,10 +8,10 @@ import nikosmods.weather2additions.items.itemfunction.TabletMapRendering;
 import java.util.function.Supplier;
 
 public class TabletPacket {
-    private int [] map;
-    private int resolution;
-    private int x;
-    private int z;
+    private final int [] map;
+    private final int resolution;
+    private final int x;
+    private final int z;
 
 
     public TabletPacket(int [] map, int resolution, int x, int z) {
