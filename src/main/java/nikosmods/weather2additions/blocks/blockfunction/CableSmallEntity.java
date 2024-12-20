@@ -5,7 +5,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class CableSmallEntity extends CableGenericEntity {
 
-    public CableSmallEntity(BlockPos blockPos, BlockState blockState, int capacity, int throughputIn, int throughputOut) {
-        super(blockPos, blockState, capacity, throughputIn, throughputOut);
+    public CableSmallEntity(BlockPos blockPos, BlockState blockState) {
+        super(blockPos, blockState, 2000, 2000, 2000);
     }
+
 }

@@ -63,7 +63,7 @@ public class CableSmall extends Block implements EntityBlock {
 
     @Override
     public BlockEntity newBlockEntity(@NotNull BlockPos blockPos, @NotNull BlockState blockState) {
-        return new CableSmallEntity(blockPos, blockState, 2000, 2000, 2000);
+        return new CableSmallEntity(blockPos, blockState);
     }
 
     @Override

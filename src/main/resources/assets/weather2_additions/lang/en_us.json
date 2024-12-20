@@ -9,5 +9,6 @@
   "block.weather2_additions.small_battery_block": "Small Battery Block",
   "item.weather2_additions.cable_small": "Small Cable",
   "block.weather2_additions.cable_small": "Small Cable",
-  "menu.weather2_additions.networkinfoscreen": "Network Info Screen"
+  "menu.weather2_additions.networkinfoscreen": "Network Info Screen",
+  "menu.weather2_additions.radarblockscreen":"Radar"
 }

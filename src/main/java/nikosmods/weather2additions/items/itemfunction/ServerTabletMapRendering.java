@@ -99,7 +99,6 @@ public class ServerTabletMapRendering {
                 }
             }
         }
-
         return Colour;
     }
 }
