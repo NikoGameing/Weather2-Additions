@@ -29,10 +29,10 @@ public class BlockEnergyStorage implements IEnergyStorage {
 
 
     @Override
-    public int receiveEnergy(int i, boolean b) {
-        int transferred = Math.min(i, capacity-stored);
+    public int receiveEnergy(int energy, boolean simulate) {
+        int transferred = Math.min(energy, capacity-stored);
         transferred = Math.min(transferred, throughputIn);
-        if (!b) {
+        if (!simulate) {
             stored += transferred;
             blockEntity.forEach(BlockEntity::setChanged);
         }
@@ -40,10 +40,19 @@ public class BlockEnergyStorage implements IEnergyStorage {
     }
 
     @Override
-    public int extractEnergy(int i, boolean b) {
-        int transferred = Math.min(i, stored);
+    public int extractEnergy(int energy, boolean simulate) {
+        int transferred = Math.min(energy, stored);
         transferred = Math.min(transferred, throughputOut);
-        if (!b) {
+        if (!simulate) {
+            stored -= transferred;
+            blockEntity.forEach(BlockEntity::setChanged);
+        }
+        return transferred;
+    }
+
+    public int consumeEnergy(int energy, boolean simulate) {
+        int transferred = Math.min(energy, stored);
+        if (!simulate) {
             stored -= transferred;
             blockEntity.forEach(BlockEntity::setChanged);
         }

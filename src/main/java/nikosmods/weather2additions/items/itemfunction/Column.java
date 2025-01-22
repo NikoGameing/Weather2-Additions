@@ -21,3 +21,4 @@ public record Column(int x, int z, Level level) {
 
     }
 }
+

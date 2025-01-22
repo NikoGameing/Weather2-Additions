@@ -17,6 +17,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import nikosmods.weather2additions.blocks.blockentityreg.BlockEntityTypes;
 import nikosmods.weather2additions.blocks.blockfunction.blockgui.MenuTypes;
 import nikosmods.weather2additions.blocks.blockfunction.blockgui.NetworkInfoScreen;
+import nikosmods.weather2additions.blocks.blockfunction.blockgui.RadarBlockScreen;
 import nikosmods.weather2additions.blocks.blockfunction.blockgui.SmallBatteryBlockScreen;
 import nikosmods.weather2additions.blocks.blockreg.Blocks;
 import nikosmods.weather2additions.keyreg.KeyRegistries;
@@ -125,9 +126,10 @@ public class Weather2Additions {
         public static void onClientSetup(FMLClientSetupEvent event)
         {
             // Some client setup code
-            LOGGER.info("Weather2 Additions loaded successfully!");
             event.enqueueWork(() -> MenuScreens.register(MenuTypes.BATTERY_BLOCK_MENU.get(), SmallBatteryBlockScreen::new));
             event.enqueueWork(() -> MenuScreens.register(MenuTypes.NETWORK_INFO_MENU.get(), NetworkInfoScreen::new));
+            event.enqueueWork(() -> MenuScreens.register(MenuTypes.RADAR_BLOCK_MENU.get(), RadarBlockScreen::new));
+            LOGGER.info("Weather2 Additions loaded successfully!");
         }
 
         @SubscribeEvent

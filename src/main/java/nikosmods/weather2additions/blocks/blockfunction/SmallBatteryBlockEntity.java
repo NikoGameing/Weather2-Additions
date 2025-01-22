@@ -48,7 +48,7 @@ public class SmallBatteryBlockEntity extends BlockEntity implements MenuProvider
     };
 
     public static void tick(Level level, BlockPos blockPos, BlockState state, BlockEntity blockEntity) {
-        if (blockEntity instanceof SmallBatteryBlockEntity batteryEntity) {
+        if (blockEntity instanceof SmallBatteryBlockEntity batteryEntity && !level.isClientSide()) {
             ItemStack charging = batteryEntity.stackHandler.getStackInSlot(0);
             ItemStack discharging = batteryEntity.stackHandler.getStackInSlot(1);
             charging.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> batteryEntity.blockEnergyStorage.extractEnergy(energy.receiveEnergy(batteryEntity.blockEnergyStorage.extractEnergy(batteryEntity.blockEnergyStorage.getThroughputOut(), true), false), false));
@@ -63,6 +63,10 @@ public class SmallBatteryBlockEntity extends BlockEntity implements MenuProvider
             }
             batteryEntity.changeEnergy = batteryEntity.blockEnergyStorage.getEnergyStored() - batteryEntity.lastEnergy;
             batteryEntity.lastEnergy = batteryEntity.blockEnergyStorage.getEnergyStored();
+            BlockEntity blockEntityBelow = level.getBlockEntity(blockPos.below());
+            if (blockEntityBelow != null) {
+                blockEntityBelow.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> energy.receiveEnergy(batteryEntity.blockEnergyStorage.extractEnergy(energy.receiveEnergy(batteryEntity.blockEnergyStorage.getThroughputOut(), true), false), false));
+            }
         }
     }
 
@@ -86,8 +90,11 @@ public class SmallBatteryBlockEntity extends BlockEntity implements MenuProvider
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == ForgeCapabilities.ENERGY && (side == Direction.UP || side == Direction.DOWN)) {
+        if (cap == ForgeCapabilities.ENERGY && (side == Direction.UP)) {
             return LazyOptional.of(() -> blockEnergyStorage).cast();
+        }
+        else if (cap == ForgeCapabilities.ENERGY && (side == Direction.DOWN)) {
+            return LazyOptional.of(DummyStorage::new).cast();
         }
         return super.getCapability(cap, side);
     }

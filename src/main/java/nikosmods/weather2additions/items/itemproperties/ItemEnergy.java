@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ItemEnergy extends Item {
-    private int maxEnergy;
+    private final int maxEnergy;
 
     @Override
     public boolean isBarVisible(ItemStack p_150899_) {

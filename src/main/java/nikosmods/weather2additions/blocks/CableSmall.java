@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -49,6 +50,11 @@ public class CableSmall extends Block implements EntityBlock {
                         .setValue(SOUTH, Connection.NONE)
                         .setValue(WEST, Connection.NONE)
         );
+    }
+
+    @Override
+    public @NotNull MapColor defaultMapColor() {
+        return MapColor.COLOR_BLACK;
     }
 
     @Override

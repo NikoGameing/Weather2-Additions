@@ -5,6 +5,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import nikosmods.weather2additions.items.itemfunction.Column;
 import nikosmods.weather2additions.items.itemfunction.ServerTabletMapRendering;
+import org.jetbrains.annotations.NotNull;
 
 
 public class SaveMapData extends SavedData {
@@ -17,7 +18,7 @@ public class SaveMapData extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag compoundTag) {
+    public @NotNull CompoundTag save(@NotNull CompoundTag compoundTag) {
         for (Column column : ServerTabletMapRendering.otherMap.keySet()) {
             compoundTag.putInt(column.cereal(), ServerTabletMapRendering.otherMap.get(column));
         }

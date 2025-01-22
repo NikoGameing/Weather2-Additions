@@ -35,7 +35,7 @@ public abstract class CableGenericEntity extends BlockEntity implements MenuProv
     public int throughputIn;
     public int throughputOut;
 
-    EnergyNetwork energyNetwork = new EnergyNetwork(this, capacity, throughputIn, throughputOut);
+    EnergyNetwork energyNetwork;
 
     public static void tick(Level level, BlockPos blockPos, BlockState state, BlockEntity blockEntity) {
         if (!level.isClientSide()){

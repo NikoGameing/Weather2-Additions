@@ -22,7 +22,7 @@ import nikosmods.weather2additions.blocks.blockfunction.blockrenderer.models.*;
 @Mod.EventBusSubscriber(modid = Weather2Additions.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class RadarRenderer implements BlockEntityRenderer<RadarBlockEntity> {
 
-    protected final RadarBlockTop dishModel;
+    protected final RadarBlockTop<?> dishModel;
 
     private static final ResourceLocation dishTexture = new ResourceLocation("weather2_additions", "textures/block/radar_block/top/finaldishtexture.png");
 
@@ -39,7 +39,7 @@ public class RadarRenderer implements BlockEntityRenderer<RadarBlockEntity> {
         poseStack.pushPose();
         poseStack.translate(0.5f, 1.5f, 0.5f);
         poseStack.mulPose(Axis.ZP.rotationDegrees(180));
-        poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTick, (float) futureSpin, (float) spin)));
+        poseStack.mulPose(Axis.YP.rotationDegrees((float) Mth.lerp(partialTick, futureSpin, spin)));
         VertexConsumer bufferBuilder = buffer.getBuffer(dishModel.renderType(dishTexture)); // .entityCutout() adds shadows to the model btw
         dishModel.renderToBuffer(poseStack, bufferBuilder, packedLight, packedOverlay, 1f, 1f, 1f, 1f);
         poseStack.popPose();

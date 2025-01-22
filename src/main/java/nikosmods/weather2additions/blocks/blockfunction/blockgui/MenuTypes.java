@@ -12,6 +12,7 @@ public class MenuTypes {
     private static final DeferredRegister<MenuType<?>> menuTypes = DeferredRegister.create(ForgeRegistries.MENU_TYPES, Weather2Additions.MODID);
     public static final RegistryObject<MenuType<SmallBatteryBlockMenu>> BATTERY_BLOCK_MENU = menuTypes.register("small_battery_block_menu", () -> IForgeMenuType.create(SmallBatteryBlockMenu::new));
     public static final RegistryObject<MenuType<NetworkInfoMenu>> NETWORK_INFO_MENU = menuTypes.register("network_info_menu", () -> IForgeMenuType.create(NetworkInfoMenu::new));
+    public static final RegistryObject<MenuType<RadarBlockMenu>> RADAR_BLOCK_MENU = menuTypes.register("radar_block_menu", () -> IForgeMenuType.create(RadarBlockMenu::new));
     public static void register(IEventBus eventBus) {
      menuTypes.register(eventBus);
     }

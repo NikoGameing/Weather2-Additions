@@ -10,6 +10,8 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.DataSlot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,10 +19,14 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.ItemStackHandler;
 import nikosmods.weather2additions.blocks.RadarBlock;
 import nikosmods.weather2additions.blocks.blockentityreg.BlockEntityTypes;
+import nikosmods.weather2additions.blocks.blockfunction.blockgui.RadarBlockMenu;
+import nikosmods.weather2additions.data.Maps;
 import nikosmods.weather2additions.items.itemfunction.Column;
 import nikosmods.weather2additions.items.itemfunction.ItemTablet;
+import nikosmods.weather2additions.items.itemfunction.ServerTabletMapRendering;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,15 +35,22 @@ import java.util.Map;
 
 public class RadarBlockEntity extends BlockEntity implements MenuProvider {
 
-    public static Map<Column, Integer> otherMap = new HashMap<>();
-    static int serverMapLoadRadius = 64;
-    public static int serverResolution = ItemTablet.resolution;
+    public static Map<Column, Integer> otherMap = Maps.otherMap;
+    static int serverMapLoadRadius = 36;
+    public static int serverResolution = Maps.mapResolution;
     static int maxTimer = 20;
     private static int timer = maxTimer;
+    private static final float loadChance = 120; // bigger = less likely (acts as a multiplier to pretend that the distance is longer)
+
+    private int lastEnergy;
+    private int changeEnergy;
+    private final int consumptionRate = 25;
 
     private double spin;
     private double lastSpin;
     private double spinFactor;
+
+    private final ItemStackHandler stackHandler = new ItemStackHandler(1);
 
     private final BlockEnergyStorage blockEnergyStorage = new BlockEnergyStorage(this, 5000, 250, 0);
 
@@ -46,6 +59,57 @@ public class RadarBlockEntity extends BlockEntity implements MenuProvider {
     }
     public double getLastSpin() {
         return lastSpin;
+    }
+    public double getSpinFactor() {
+        return spinFactor;
+    }
+
+    public ItemStackHandler getStackHandler() {
+        return stackHandler;
+    }
+
+    public static void tick(Level level, BlockPos blockPos, BlockState state, BlockEntity blockEntity) {
+        RadarBlockEntity radarBlockEntity = (RadarBlockEntity) blockEntity;
+        ItemStack battery = radarBlockEntity.stackHandler.getStackInSlot(0);
+        battery.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> radarBlockEntity.blockEnergyStorage.receiveEnergy(energy.extractEnergy(radarBlockEntity.blockEnergyStorage.receiveEnergy(radarBlockEntity.blockEnergyStorage.getThroughputIn(), true), false), false));
+        if (!level.isClientSide()) {
+            if (radarBlockEntity.isPowered() && !state.getValue(RadarBlock.POWERED)) {
+            level.setBlock(blockPos, state.setValue(RadarBlock.POWERED, true), 2);
+        }
+        else if (!radarBlockEntity.isPowered() && state.getValue(RadarBlock.POWERED)) {
+            level.setBlock(blockPos, state.setValue(RadarBlock.POWERED, false), 2);
+        }
+            if (state.getValue(RadarBlock.POWERED)) {
+                radarBlockEntity.blockEnergyStorage.consumeEnergy(radarBlockEntity.blockEnergyStorage.consumeEnergy(radarBlockEntity.consumptionRate, true), false);
+                if (timer < 0) {
+                    loadAroundBlock(blockPos, (ServerLevel) level);
+                    timer = maxTimer;
+                }
+                else {
+                    timer -= 1;
+                }
+            }
+        }
+        else {
+            if (state.getValue(RadarBlock.POWERED)) {
+                if (radarBlockEntity.spinFactor < 1) {
+                    radarBlockEntity.spinFactor += 0.01;
+                }
+            } else if (!state.getValue(RadarBlock.POWERED)) {
+
+                if (radarBlockEntity.spinFactor > 0) {
+                    radarBlockEntity.spinFactor -= 0.01;
+                }
+            }
+            radarBlockEntity.lastSpin = radarBlockEntity.spin;
+            radarBlockEntity.spin = (radarBlockEntity.spin + (5 * (radarBlockEntity.spinFactor)));
+            if (radarBlockEntity.spin > 360) {
+                radarBlockEntity.lastSpin = radarBlockEntity.lastSpin - 360;
+                radarBlockEntity.spin = radarBlockEntity.spin - 360;
+            }
+        }
+        radarBlockEntity.changeEnergy = radarBlockEntity.blockEnergyStorage.getEnergyStored() - radarBlockEntity.lastEnergy;
+        radarBlockEntity.lastEnergy = radarBlockEntity.blockEnergyStorage.getEnergyStored();
     }
 
     public static void loadAroundBlock(BlockPos blockPos, ServerLevel level) {
@@ -84,19 +148,16 @@ public class RadarBlockEntity extends BlockEntity implements MenuProvider {
 
     public static int getColour(int x, int z, Level level) {
         int Colour = 0;
-        for (int height = 320; height >= -64; height --) {
-            BlockPos blockPos = new BlockPos(x, height, z);
-            if (level.isLoaded(blockPos)) {
-                BlockState blockState = level.getBlockState(blockPos);
-                if (!blockState.isAir()) {
-                    Colour = blockState.getMapColor(level, blockPos).calculateRGBColor(MapColor.Brightness.NORMAL);
-                    Colour = fixColour(Colour, ((float) (height + 56) / 220));
-                    if (Colour != 0) {
-                        if (!blockState.canOcclude()) {
-                            Colour = brightenColour(Colour, 0.15f);
-                        }
-                        break;
+        for (int height = 320; height >= -64; height--) {
+            BlockState blockState = level.getBlockState(new BlockPos(x, height, z));
+            if (!blockState.isAir()) {
+                Colour = blockState.getMapColor(level, new BlockPos(x, height, z)).calculateRGBColor(MapColor.Brightness.NORMAL);
+                Colour = fixColour(Colour, ((float) (height + 56) / 220));
+                if (Colour != 0) {
+                    if (!blockState.canOcclude()) {
+                        Colour = brightenColour(Colour, 0.15f);
                     }
+                    break;
                 }
             }
         }
@@ -104,7 +165,7 @@ public class RadarBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     public static boolean choose(int x, int z) {
-        double distance = (Math.abs(x) + Math.abs(z)) * 0.5;
+        double distance = (Math.abs(x) + Math.abs(z)) * loadChance;
         double random = Math.random();
         if (distance == 0) {
             return true;
@@ -125,56 +186,25 @@ public class RadarBlockEntity extends BlockEntity implements MenuProvider {
         }
     }
 
-    public static void tick(Level level, BlockPos blockPos, BlockState state, BlockEntity blockEntity) {
-        RadarBlockEntity radarBlockEntity = (RadarBlockEntity) blockEntity;
-        if (radarBlockEntity.isPowered() && !state.getValue(RadarBlock.POWERED)) {
-            level.setBlock(blockPos, state.setValue(RadarBlock.POWERED, true), 2);
-        }
-        else if (state.getValue(RadarBlock.POWERED)) {
-            level.setBlock(blockPos, state.setValue(RadarBlock.POWERED, false), 2);
-        }
-        if (!level.isClientSide()) {
-            if (timer < 0 || state.getValue(RadarBlock.POWERED)) {
-                loadAroundBlock(blockPos, (ServerLevel) level);
-                timer = maxTimer;
-            } else if (state.getValue(RadarBlock.POWERED)) {
-                timer -= 1;
-            }
-        }
-            else {
-            if (state.getValue(RadarBlock.POWERED)) {
 
-                if (radarBlockEntity.spinFactor < 1) {
-                    radarBlockEntity.spinFactor += 0.005;
-                }
-            } else if (!state.getValue(RadarBlock.POWERED)) {
-
-                if (radarBlockEntity.spinFactor > 0) {
-                    radarBlockEntity.spinFactor -= 0.005;
-                }
-            }
-            radarBlockEntity.lastSpin = radarBlockEntity.spin;
-            radarBlockEntity.spin = (radarBlockEntity.spin + (1000.0F / (radarBlockEntity.spinFactor + 200.0F)));
-            if (radarBlockEntity.spin > 360) {
-                radarBlockEntity.lastSpin = radarBlockEntity.lastSpin - 360;
-                radarBlockEntity.spin = radarBlockEntity.spin - 360;
-            }
-        }
-    }
 
     @Override
-    public Component getDisplayName() {
+    public @NotNull Component getDisplayName() {
         return Component.translatable("menu.weather2_additions.radarblockscreen");
     }
 
+
+
     @Override
     protected void saveAdditional(CompoundTag tag) {
+        tag.put("Inventory", stackHandler.serializeNBT());
         tag.putInt("Energy", blockEnergyStorage.getEnergyStored());
         super.saveAdditional(tag);
     }
 
     @Override
     public void load(CompoundTag tag) {
+        stackHandler.deserializeNBT(tag.getCompound("Inventory"));
         blockEnergyStorage.setEnergyStored(tag.getInt("Energy"));
         super.load(tag);
     }
@@ -188,7 +218,83 @@ public class RadarBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
-        return null;
+    public @Nullable AbstractContainerMenu createMenu(int i, @NotNull Inventory inventory, @NotNull Player player) {
+        return new RadarBlockMenu(i, inventory, this, true);
+    }
+
+    private final DataSlot currentStoredEnergyData = new DataSlot() {
+        @Override
+        public int get() {
+            return blockEnergyStorage.getEnergyStored();
+        }
+
+        @Override
+        public void set(int i) {
+
+        }
+    };
+
+    private final DataSlot maxEnergyStoredData = new DataSlot() {
+        @Override
+        public int get() {
+            return blockEnergyStorage.getMaxEnergyStored();
+        }
+
+        @Override
+        public void set(int i) {
+
+        }
+    };
+
+    private final DataSlot changeEnergyData = new DataSlot() {
+        @Override
+        public int get() {
+            return changeEnergy;
+        }
+
+        @Override
+        public void set(int i) {
+
+        }
+    };
+
+    private final DataSlot radiusData = new DataSlot() {
+        @Override
+        public int get() {
+            return serverResolution;
+        }
+
+        @Override
+        public void set(int i) {
+
+        }
+    };
+
+    private final DataSlot throughputData = new DataSlot() {
+        @Override
+        public int get() {
+            return consumptionRate;
+        }
+
+        @Override
+        public void set(int i) {
+
+        }
+    };
+
+    public DataSlot getCurrentStoredEnergyData() {
+        return currentStoredEnergyData;
+    }
+    public DataSlot getMaxEnergyStoredData() {
+        return maxEnergyStoredData;
+    }
+    public DataSlot getChangeEnergyData() {
+        return changeEnergyData;
+    }
+    public DataSlot getRadiusData() {
+        return radiusData;
+    }
+    public DataSlot getThroughputData() {
+        return throughputData;
     }
 }

@@ -1,6 +1,7 @@
 {
   "values": [
     "weather2_additions:small_battery_block",
-    "weather2_additions:cable_small"
+    "weather2_additions:cable_small",
+    "weather2_additions:radar_block"
   ]
 }

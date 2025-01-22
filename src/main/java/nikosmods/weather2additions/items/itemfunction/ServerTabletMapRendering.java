@@ -8,17 +8,17 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
+import nikosmods.weather2additions.data.Maps;
 import nikosmods.weather2additions.network.Messages;
-import nikosmods.weather2additions.network.TabletPacket;
+import nikosmods.weather2additions.network.MapPacket;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class ServerTabletMapRendering {
-    public static Map<Column, Integer> otherMap = new HashMap<>();
-    public static int serverMapLoadRadius = 24;
-    public static int serverResolution = ItemTablet.resolution;
-    public static int serverMapRadius = ItemTablet.mapRadius;
+    public static Map<Column, Integer> otherMap = Maps.otherMap;
+    public static int serverMapLoadRadius = 6;
+    public static int serverResolution = Maps.mapResolution;
+    public static int serverMapRadius = Maps.tabletMapRadius;
 
     public static int fixColour(int colour, float dim) {
         dim = Mth.clamp(dim, 0f, 1f);
@@ -67,7 +67,7 @@ public class ServerTabletMapRendering {
                 map[i++] = otherMap.getOrDefault(column, 0);
             }
         }
-        Messages.sendToClient(new TabletPacket(map, serverResolution, centerX, centerZ), player);
+        Messages.sendToClient(new MapPacket(map, serverResolution, centerX, centerZ, "tablet"), player);
     }
 
     public static boolean choose(int x, int z) {

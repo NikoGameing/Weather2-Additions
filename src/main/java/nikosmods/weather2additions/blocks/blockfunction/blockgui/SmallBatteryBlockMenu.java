@@ -12,6 +12,8 @@ import net.minecraftforge.items.SlotItemHandler;
 import nikosmods.weather2additions.blocks.blockfunction.SmallBatteryBlockEntity;
 import nikosmods.weather2additions.blocks.blockreg.Blocks;
 
+import java.util.Objects;
+
 
 public class SmallBatteryBlockMenu extends AbstractContainerMenu {
 
@@ -86,7 +88,7 @@ public class SmallBatteryBlockMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return stillValid(ContainerLevelAccess.create(smallBatteryBlock.getLevel(), smallBatteryBlock.getBlockPos()), player, Blocks.SMALL_BATTERY_BLOCK.get());
+        return stillValid(ContainerLevelAccess.create(Objects.requireNonNull(smallBatteryBlock.getLevel()), smallBatteryBlock.getBlockPos()), player, Blocks.SMALL_BATTERY_BLOCK.get());
     }
 
     private void addPlayerInventory(Inventory pPlayerInventory) {

@@ -13,7 +13,7 @@ public class Messages {
     private static final SimpleChannel channel = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(Weather2Additions.MODID, "channel")).networkProtocolVersion(() -> "hot dog").clientAcceptedVersions(version -> true).serverAcceptedVersions(version -> true).simpleChannel();  // im only going to make this line longer with random comments that don't contribute to anything because its funny and silly
     private static int Id = 0;
     public static void register(FMLCommonSetupEvent setupEvent) {
-        channel.messageBuilder(TabletPacket.class, Id ++, NetworkDirection.PLAY_TO_CLIENT).decoder(TabletPacket::new).encoder(TabletPacket::encode).consumerMainThread(TabletPacket::handle).add();
+        channel.messageBuilder(MapPacket.class, Id ++, NetworkDirection.PLAY_TO_CLIENT).decoder(MapPacket::new).encoder(MapPacket::encode).consumerMainThread(MapPacket::handle).add();
         channel.messageBuilder(AnalyserPacket.class, Id ++, NetworkDirection.PLAY_TO_CLIENT).decoder(AnalyserPacket::new).encoder(AnalyserPacket::encode).consumerMainThread(AnalyserPacket::handle).add();
     }
     public static <MSG> void sendToServer(MSG message) {

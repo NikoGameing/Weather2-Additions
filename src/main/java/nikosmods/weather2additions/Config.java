@@ -1,4 +1,4 @@
-/*
+/* TODO: configs!!
 package nikosmods.weather2additions;
 
 import net.minecraft.resources.ResourceLocation;
@@ -59,7 +59,7 @@ public class Config
 
         // convert the list of strings into a set of items
         items = ITEM_STRINGS.get().stream()
-                .map(itemName -> ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName)))
+                .tabletMap(itemName -> ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName)))
                 .collect(Collectors.toSet());
     }
 }

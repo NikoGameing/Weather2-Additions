@@ -1,14 +1,20 @@
 {
+  "itemGroup.weather2_additions.main": "Weather2 Additions",
+
   "item.weather2_additions.tablet": "Tablet",
   "item.weather2_additions.small_battery_block" : "Small Battery Block",
   "item.weather2_additions.network_analyser": "Network Analyser",
-  "itemGroup.weather2_additions.main": "Weather2 Additions",
-  "key.weather2_additions.cyclemapforward": "Cycle storm selection forwards",
-  "key.weather2_additions.cyclemapbackward": "Cycle storm selection backwards",
-  "menu.weather2_additions.smallbatteryblock": "Small Battery Block",
-  "block.weather2_additions.small_battery_block": "Small Battery Block",
   "item.weather2_additions.cable_small": "Small Cable",
+  "item.weather2_additions.radar_block": "Radar Block",
+
+  "block.weather2_additions.small_battery_block": "Small Battery Block",
   "block.weather2_additions.cable_small": "Small Cable",
+  "block.weather2_additions.radar_block": "Radar Block",
+
   "menu.weather2_additions.networkinfoscreen": "Network Info Screen",
-  "menu.weather2_additions.radarblockscreen":"Radar"
+  "menu.weather2_additions.radarblockscreen":"Radar",
+  "menu.weather2_additions.smallbatteryblock": "Small Battery Block",
+
+  "key.weather2_additions.cyclemapforward": "Cycle storm selection forwards",
+  "key.weather2_additions.cyclemapbackward": "Cycle storm selection backwards"
 }

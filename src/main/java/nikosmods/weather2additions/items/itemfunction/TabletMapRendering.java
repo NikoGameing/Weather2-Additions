@@ -3,13 +3,12 @@ package nikosmods.weather2additions.items.itemfunction;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.logging.LogUtils;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import nikosmods.weather2additions.data.Maps;
 import nikosmods.weather2additions.keyreg.KeyRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,24 +25,17 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.RoundingMode;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.*;
 
 public class TabletMapRendering {
-    private static int [] map;
-    private static int mapResolution = 0;
-    private static int mapX = 0;
-    private static int mapY = 0;
-    private static int mapRadius = 0;
+    private static final int mapResolution = Maps.mapResolution;
+    private static int mapRadius = Maps.tabletMapRadius;
     private static int selection = 0;
     private static WeatherObject selected;
-    public static int mapDiameter = 0;
     public static int tick = 0;
     // big resourcelocation burger
 
@@ -76,7 +68,6 @@ public class TabletMapRendering {
     private static final ResourceLocation battery2 = new ResourceLocation("weather2_additions", "textures/weathericon/battery/2.png");
     private static final ResourceLocation battery1 = new ResourceLocation("weather2_additions", "textures/weathericon/battery/1.png");
     private static final ResourceLocation battery0 = new ResourceLocation("weather2_additions", "textures/weathericon/battery/0.png");
-
 
     public static @Nullable Dimension getImageDimension(InputStream inputStream) throws IOException {
         Iterator<ImageReader> iter = ImageIO.getImageReadersBySuffix("png");
@@ -160,6 +151,7 @@ public class TabletMapRendering {
 
     public static void renderWeather(PoseStack transform, LocalPlayer player) {
         WeatherManagerClient weather = ClientTickHandler.weatherManager;
+        mapRadius = Maps.tabletMapRadius;
         for (WeatherObject weatherObject:weather.getStormObjects()) {
             float playerX = (float) player.getX();
             float playerZ = (float) player.getZ();
@@ -234,6 +226,7 @@ public class TabletMapRendering {
 
     public static void renderStormInfo(PoseStack transform, Player player) throws IOException {
         WeatherManagerClient weather = ClientTickHandler.weatherManager;
+        mapRadius = Maps.tabletMapRadius;
         ArrayList<WeatherObject> stormObjects = new ArrayList<>();
         for (WeatherObject weatherObject : weather.getStormObjects()) {
             float playerX = (float) player.getX();
@@ -370,6 +363,7 @@ public class TabletMapRendering {
     }
 
     public static void selectionIcon(PoseStack transform, Player player, @NotNull ArrayList<WeatherObject> stormObjects) {
+        mapRadius = Maps.tabletMapRadius;
         for (WeatherObject stormObject:stormObjects) {
             float playerX = (float) player.getX();
             float playerZ = (float) player.getZ();
@@ -725,16 +719,11 @@ public class TabletMapRendering {
         transform.popPose();
     }
 
-    public static void updateMap(int [] mapArray, int x, int z, int resolution){
-        mapX = x;
-        mapY = z;
-        mapResolution = resolution;
-        map = mapArray;
-        mapDiameter = (int) Math.sqrt(map.length);
-        mapRadius = (mapDiameter / 2);
-    }
-
     public static void renderMap(PoseStack transform, Player player) {
+        int[] map = Maps.tabletMap;
+        mapRadius = Maps.tabletMapRadius;
+        int mapX = Maps.mapX;
+        int mapY = Maps.mapY;
         if (map != null) {
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
             RenderSystem.enableDepthTest();

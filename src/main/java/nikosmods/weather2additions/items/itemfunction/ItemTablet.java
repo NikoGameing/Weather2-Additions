@@ -8,6 +8,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import nikosmods.weather2additions.data.Maps;
 import nikosmods.weather2additions.items.itemproperties.ItemEnergy;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +19,7 @@ import java.util.List;
 public class ItemTablet extends ItemEnergy {
     public static final int maxTimer = 20;
     public static final int mapRadius = 50;
-    public static final int resolution = 16;
+    public static final int resolution = Maps.mapResolution;
 
     @Override
     public void inventoryTick(ItemStack p_41404_, Level p_41405_, Entity p_41406_, int p_41407_, boolean p_41408_) {
