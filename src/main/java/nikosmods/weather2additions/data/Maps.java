@@ -12,22 +12,21 @@ public class Maps {
     public static Map<Column, Integer> otherMap = new HashMap<>();
     public static int mapX;
     public static int mapY;
-    public static int mapDiameter;
     public static int tabletMapRadius = 50;
     public static final int radarMapRadius = 49;
 
-    public static void updateMap(int[] mapArray, int x, int z, int resolution, String owner){
+    public static void updateMap(int[] mapArray, int x, int z, int resolution, int radius, String owner){
         switch (owner) {
             case "radar" -> {
                 radarMap = mapArray;
+                mapResolution = resolution;
             }
             case "tablet" -> {
                 tabletMap = mapArray;
-                mapDiameter = (int) Math.sqrt(tabletMap.length);
                 mapX = x;
                 mapY = z;
                 mapResolution = resolution;
-                tabletMapRadius = (mapDiameter / 2);
+                tabletMapRadius = radius;
             }
         }
     }

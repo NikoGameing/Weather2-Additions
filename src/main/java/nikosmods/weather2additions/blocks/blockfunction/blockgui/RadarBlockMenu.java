@@ -15,6 +15,7 @@ import nikosmods.weather2additions.data.Maps;
 import nikosmods.weather2additions.items.itemfunction.Column;
 import nikosmods.weather2additions.network.Messages;
 import nikosmods.weather2additions.network.MapPacket;
+import nikosmods.weather2additions.Config;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -23,8 +24,8 @@ public class RadarBlockMenu extends AbstractContainerMenu {
 
     public final int inventoryOffsetY = 32;
     public final int inventoryOffsetX = 35;
-    public final int mapResolution = Maps.mapResolution;
-    public final int mapRadius = Maps.radarMapRadius;
+    public int mapResolution = Config.RESOLUTION.get();
+    public int mapRadius = Maps.radarMapRadius;
 
     private final Map<Column, Integer> otherMap = Maps.otherMap;
 
@@ -67,19 +68,20 @@ public class RadarBlockMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(@NotNull Player player) {
+        mapResolution = Config.RESOLUTION.get();
+        mapRadius = Maps.radarMapRadius;
         ServerPlayer serverPlayer = (ServerPlayer) player;
         int [] map = new int[98*98];
         int i = 0;
         for (int x = -mapRadius; x < mapRadius; x++) {
             for (int y = -mapRadius; y < mapRadius; y++) {
                 int worldX = radarBlock.getBlockPos().getX() / mapResolution * mapResolution + x * mapResolution;
-                int worldY = radarBlock.getBlockPos().getZ() / mapResolution * mapResolution + y * mapResolution;
-                Column column = new Column(worldX, -worldY, serverPlayer.level());
-                map[i] = otherMap.getOrDefault(column, 0);
-                i++;
+                int worldY = radarBlock.getBlockPos().getZ() / mapResolution * mapResolution + -y * mapResolution;
+                Column column = new Column(worldX, worldY, serverPlayer.level());
+                map[i++] = otherMap.getOrDefault(column, 0);
             }
         }
-        MapPacket mapPacket = new MapPacket(map, 0, 0, 0, "radar");
+        MapPacket mapPacket = new MapPacket(map, mapResolution, 0, 0, 0, "radar");
         Messages.sendToClient(mapPacket, serverPlayer);
         return stillValid(ContainerLevelAccess.create(Objects.requireNonNull(radarBlock.getLevel()), radarBlock.getBlockPos()), player, Blocks.RADAR_BLOCK.get());
     }

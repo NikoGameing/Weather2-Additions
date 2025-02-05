@@ -14,6 +14,7 @@ import nikosmods.weather2additions.items.itemfunction.ServerTabletMapRendering;
 public class CommonEventHandler {
     private static int counter = 0;
     @SubscribeEvent
+
     public static void onTickEvent(TickEvent tickEvent) {
         if (counter == 0) {
             if (tickEvent instanceof TickEvent.LevelTickEvent levelTickEvent) {
@@ -25,7 +26,7 @@ public class CommonEventHandler {
                     }
                 }
             }
-            counter = 13;
+            counter = Config.PLAYER_LOAD_TIMER.get();
         }
         counter--;
     }

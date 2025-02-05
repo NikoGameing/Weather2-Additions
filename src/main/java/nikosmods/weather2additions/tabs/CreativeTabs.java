@@ -21,6 +21,8 @@ public class CreativeTabs {
                 output.accept(Items.CABLE_SMALL.get());
                 output.accept(Items.ANALYSER.get());
                 output.accept(Items.RADAR_BLOCK.get());
+                output.accept(Items.DETECTION_COMPONENTS.get());
+                output.accept(Items.SMALL_BATTERY.get());
             })
             .build());
     public static void register(IEventBus eventBus) {

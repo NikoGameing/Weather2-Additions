@@ -1,10 +1,10 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "FIA",
-    "IWI",
+    " F ",
+    "III",
     "IRI"
-    ],
+  ],
   "key": {
     "I": {
       "item": "minecraft:iron_ingot"
@@ -14,15 +14,9 @@
     },
     "R": {
       "item": "weather2_additions:small_battery"
-    },
-    "W": {
-      "tag": "forge:glass_panes"
-    },
-    "A": {
-      "item": "weather2:anemometer"
     }
-    },
+  },
   "result": {
-    "item": "weather2_additions:tablet"
+    "item": "weather2_additions:radar_block"
   }
 }

@@ -9,7 +9,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import nikosmods.weather2additions.data.Maps;
+import nikosmods.weather2additions.items.Tablet;
 import nikosmods.weather2additions.keyreg.KeyRegistries;
+import nikosmods.weather2additions.Config;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -32,8 +34,8 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 public class TabletMapRendering {
-    private static final int mapResolution = Maps.mapResolution;
-    private static int mapRadius = Maps.tabletMapRadius;
+    private static int mapResolution = Config.RESOLUTION.get();
+    private static int mapRadius = Config.TABLET_RADIUS.get();
     private static int selection = 0;
     private static WeatherObject selected;
     public static int tick = 0;
@@ -152,6 +154,7 @@ public class TabletMapRendering {
     public static void renderWeather(PoseStack transform, LocalPlayer player) {
         WeatherManagerClient weather = ClientTickHandler.weatherManager;
         mapRadius = Maps.tabletMapRadius;
+        mapResolution = Maps.mapResolution;
         for (WeatherObject weatherObject:weather.getStormObjects()) {
             float playerX = (float) player.getX();
             float playerZ = (float) player.getZ();
@@ -227,6 +230,7 @@ public class TabletMapRendering {
     public static void renderStormInfo(PoseStack transform, Player player) throws IOException {
         WeatherManagerClient weather = ClientTickHandler.weatherManager;
         mapRadius = Maps.tabletMapRadius;
+        mapResolution = Maps.mapResolution;
         ArrayList<WeatherObject> stormObjects = new ArrayList<>();
         for (WeatherObject weatherObject : weather.getStormObjects()) {
             float playerX = (float) player.getX();
@@ -364,6 +368,7 @@ public class TabletMapRendering {
 
     public static void selectionIcon(PoseStack transform, Player player, @NotNull ArrayList<WeatherObject> stormObjects) {
         mapRadius = Maps.tabletMapRadius;
+        mapResolution = Maps.mapResolution;
         for (WeatherObject stormObject:stormObjects) {
             float playerX = (float) player.getX();
             float playerZ = (float) player.getZ();
@@ -680,7 +685,7 @@ public class TabletMapRendering {
         float size = 0.6f;
         ResourceLocation batteryIcon = battery0;
         if (stack.getTag() != null) {
-            energyDecimalPercent = (float) stack.getTag().getInt("CurrentEnergy") / ((ItemTablet) stack.getItem()).getMaxEnergy();
+            energyDecimalPercent = (float) stack.getTag().getInt("CurrentEnergy") / ((Tablet) stack.getItem()).getMaxEnergy();
             if (energyDecimalPercent >= 0.8) {
                 batteryIcon = battery5;
             } else if (energyDecimalPercent < 0.8 && energyDecimalPercent >= 0.6) {
@@ -722,6 +727,7 @@ public class TabletMapRendering {
     public static void renderMap(PoseStack transform, Player player) {
         int[] map = Maps.tabletMap;
         mapRadius = Maps.tabletMapRadius;
+        mapResolution = Maps.mapResolution;
         int mapX = Maps.mapX;
         int mapY = Maps.mapY;
         if (map != null) {
@@ -740,10 +746,10 @@ public class TabletMapRendering {
                     float fy0 = (-z - 0.5f + offsetY) / mapRadius;
                     float fx1 = (x + 0.5f + offsetX) / mapRadius;
                     float fy1 = (-z + 0.5f + offsetY) / mapRadius;
-                    bufferBuilder.vertex(matrix4f, fx0,fy0,0).color(colour).endVertex();
-                    bufferBuilder.vertex(matrix4f, fx1,fy0,0).color(colour).endVertex();
-                    bufferBuilder.vertex(matrix4f, fx1,fy1,0).color(colour).endVertex();
-                    bufferBuilder.vertex(matrix4f, fx0,fy1,0).color(colour).endVertex();
+                    bufferBuilder.vertex(matrix4f, fx0, fy0, 0).color(colour).endVertex();
+                    bufferBuilder.vertex(matrix4f, fx1, fy0, 0).color(colour).endVertex();
+                    bufferBuilder.vertex(matrix4f, fx1, fy1, 0).color(colour).endVertex();
+                    bufferBuilder.vertex(matrix4f, fx0, fy1, 0).color(colour).endVertex();
                 }
             }
             BufferUploader.drawWithShader(bufferBuilder.end());

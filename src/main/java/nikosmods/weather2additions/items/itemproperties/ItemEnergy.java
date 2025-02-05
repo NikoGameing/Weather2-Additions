@@ -4,6 +4,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -12,8 +13,14 @@ import net.minecraftforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+
+@ParametersAreNonnullByDefault
 public class ItemEnergy extends Item {
     private final int maxEnergy;
+    private final int throughputIn;
+    private final int throughputOut;
+    private int stored = 50000;
 
     @Override
     public boolean isBarVisible(ItemStack p_150899_) {
@@ -54,8 +61,13 @@ public class ItemEnergy extends Item {
             }
 
             @Override
-            public int extractEnergy(int i, boolean b) {
-                return 0;
+            public int extractEnergy(int energy, boolean simulate) {
+                int transferred = Math.min(energy, getTag(stack).getInt("CurrentEnergy"));
+                transferred = Math.min(transferred, throughputOut);
+                if (!simulate) {
+                    getTag(stack).putInt("CurrentEnergy", getEnergyStored() - transferred);
+                }
+                return transferred;
             }
 
             @Override
@@ -70,15 +82,15 @@ public class ItemEnergy extends Item {
 
             @Override
             public boolean canExtract() {
-                return false;
+                return throughputIn > 0;
             }
 
             @Override
             public boolean canReceive() {
-                return true;
+                return throughputOut > 0;
             }
         };
-        ICapabilityProvider provider = new ICapabilityProvider() {
+        return new ICapabilityProvider() {
             @Override
             public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction direction) {
                 if (capability == ForgeCapabilities.ENERGY) {
@@ -87,7 +99,6 @@ public class ItemEnergy extends Item {
                 return LazyOptional.empty();
             }
         };
-        return provider;
     }
 
     public CompoundTag getTag(ItemStack stack) {
@@ -99,11 +110,14 @@ public class ItemEnergy extends Item {
         return stack.getTag();
     }
 
-    public ItemEnergy(Properties properties, int paramMaxEnergy) {
+    public ItemEnergy(Properties properties, int paramMaxEnergy, int throughputIn, int throughputOut) {
         super(properties);
         maxEnergy = paramMaxEnergy;
+        this.throughputIn = throughputIn;
+        this.throughputOut = throughputOut;
     }
     public int getMaxEnergy() {
         return maxEnergy;
     }
+
 }

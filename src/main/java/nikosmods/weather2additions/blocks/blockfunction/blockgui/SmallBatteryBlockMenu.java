@@ -1,6 +1,7 @@
 package nikosmods.weather2additions.blocks.blockfunction.blockgui;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -11,6 +12,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
 import nikosmods.weather2additions.blocks.blockfunction.SmallBatteryBlockEntity;
 import nikosmods.weather2additions.blocks.blockreg.Blocks;
+import nikosmods.weather2additions.network.EnergyPacket;
+import nikosmods.weather2additions.network.Messages;
 
 import java.util.Objects;
 
@@ -18,13 +21,13 @@ import java.util.Objects;
 public class SmallBatteryBlockMenu extends AbstractContainerMenu {
 
     private final SmallBatteryBlockEntity smallBatteryBlock;
-    private final DataSlot dataSlotCharging;
-    private final DataSlot dataSlotDischarging;
-    private final DataSlot dataSlotChargingEnergy;
-    private final DataSlot dataSlotDischargingEnergy;
-    private final DataSlot dataSlotMaximumEnergy;
-    private final DataSlot dataSlotCurrentEnergy;
-    private final DataSlot dataSlotChangeEnergy;
+    private static int chargingThroughput;
+    private static int dischargingThroughput;
+    private static int chargingEnergy;
+    private static int dischargingEnergy;
+    private static int maxEnergy;
+    private static int currentEnergy;
+    private static int changeEnergy;
 
     public SmallBatteryBlockMenu(int containerID, Inventory inventory, SmallBatteryBlockEntity smallBatteryBlock, boolean server) {
         super(MenuTypes.BATTERY_BLOCK_MENU.get(), containerID);
@@ -33,48 +36,38 @@ public class SmallBatteryBlockMenu extends AbstractContainerMenu {
         addPlayerInventory(inventory);
         addSlot(new SlotItemHandler(smallBatteryBlock.getStackHandler(), 0, 8,40));
         addSlot(new SlotItemHandler(smallBatteryBlock.getStackHandler(), 1, 152,60));
-        dataSlotCharging = server?smallBatteryBlock.getChargingDataSlot():DataSlot.standalone();
-        dataSlotDischarging = server?smallBatteryBlock.getDischargingDataSlot():DataSlot.standalone();
-        dataSlotChargingEnergy = server?smallBatteryBlock.getChargingEnergy():DataSlot.standalone();
-        dataSlotDischargingEnergy = server?smallBatteryBlock.getDischargingEnergy():DataSlot.standalone();
-        dataSlotMaximumEnergy = server?smallBatteryBlock.getMaximumEnergy():DataSlot.standalone();
-        dataSlotCurrentEnergy = server?smallBatteryBlock.getCurrentStoredEnergyData():DataSlot.standalone();
-        dataSlotChangeEnergy = server?smallBatteryBlock.getChangeInEnergy():DataSlot.standalone();
-        addDataSlot(dataSlotCharging);
-        addDataSlot(dataSlotDischarging);
-        addDataSlot(dataSlotChargingEnergy);
-        addDataSlot(dataSlotDischargingEnergy);
-        addDataSlot(dataSlotMaximumEnergy);
-        addDataSlot(dataSlotCurrentEnergy);
-        addDataSlot(dataSlotChangeEnergy);
     }
 
-    public DataSlot getDataSlotCharging() {
-        return dataSlotCharging;
+    public int getDataSlotCharging() {
+        return chargingThroughput;
+    }
+    public int getDataSlotDischarging() {
+        return dischargingThroughput;
+    }
+    public int getDataSlotChargingEnergy() {
+        return chargingEnergy;
+    }
+    public int getDataSlotDischargingEnergy() {
+        return dischargingEnergy;
+    }
+    public int getDataSlotMaximumEnergy() {
+        return maxEnergy;
+    }
+    public int getDataSlotCurrentEnergy() {
+        return currentEnergy;
+    }
+    public int getDataSlotChangeEnergy() {
+        return changeEnergy;
     }
 
-    public DataSlot getDataSlotDischarging() {
-        return dataSlotDischarging;
-    }
-
-    public DataSlot getDataSlotChargingEnergy() {
-        return dataSlotChargingEnergy;
-    }
-
-    public DataSlot getDataSlotDischargingEnergy() {
-        return dataSlotDischargingEnergy;
-    }
-
-    public DataSlot getDataSlotMaximumEnergy() {
-        return dataSlotMaximumEnergy;
-    }
-
-    public DataSlot getDataSlotCurrentEnergy() {
-        return dataSlotCurrentEnergy;
-    }
-
-    public DataSlot getDataSlotChangeEnergy() {
-        return dataSlotChangeEnergy;
+    public static void setAll(int chargingThroughput, int chargingEnergy, int dischargingThroughput, int dischargingEnergy, int currentEnergy, int maxEnergy, int changeEnergy) {
+        SmallBatteryBlockMenu.chargingThroughput = chargingThroughput;
+        SmallBatteryBlockMenu.chargingEnergy = chargingEnergy;
+        SmallBatteryBlockMenu.dischargingThroughput = dischargingThroughput;
+        SmallBatteryBlockMenu.dischargingEnergy = dischargingEnergy;
+        SmallBatteryBlockMenu.currentEnergy = currentEnergy;
+        SmallBatteryBlockMenu.maxEnergy = maxEnergy;
+        SmallBatteryBlockMenu.changeEnergy = changeEnergy;
     }
 
     public SmallBatteryBlockMenu(int containerID, Inventory inventory, FriendlyByteBuf byteBuffer) {
@@ -88,6 +81,14 @@ public class SmallBatteryBlockMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
+        int chargingThroughput = smallBatteryBlock.getItemDifferenceCharging();
+        int chargingEnergy = smallBatteryBlock.getItemChargingEnergy();
+        int dischargingThroughput = smallBatteryBlock.getItemDifferenceDischarging();
+        int dischargingEnergy = smallBatteryBlock.getItemDischargingEnergy();
+        int currentEnergy = smallBatteryBlock.getCurrentEnergy();
+        int maxEnergy = smallBatteryBlock.getMaxEnergy();
+        int energyDifference = smallBatteryBlock.getEnergyDifference();
+        Messages.sendToClient(new EnergyPacket(chargingThroughput, chargingEnergy, dischargingThroughput, dischargingEnergy, currentEnergy, maxEnergy, energyDifference), (ServerPlayer) player);
         return stillValid(ContainerLevelAccess.create(Objects.requireNonNull(smallBatteryBlock.getLevel()), smallBatteryBlock.getBlockPos()), player, Blocks.SMALL_BATTERY_BLOCK.get());
     }
 

@@ -8,7 +8,6 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -26,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 
-
 public class SmallBatteryBlockEntity extends BlockEntity implements MenuProvider {
 
     private int previousCharging = 0;
@@ -35,6 +33,8 @@ public class SmallBatteryBlockEntity extends BlockEntity implements MenuProvider
     private int differenceDischarging = 0;
     private int lastEnergy = 0;
     private int changeEnergy = 0;
+    private boolean wasEmpty0 = true;
+    private boolean wasEmpty1 = true;
 
 
     private final BlockEnergyStorage blockEnergyStorage = new BlockEnergyStorage(this, 50000, 50000, 250);
@@ -53,14 +53,34 @@ public class SmallBatteryBlockEntity extends BlockEntity implements MenuProvider
             ItemStack discharging = batteryEntity.stackHandler.getStackInSlot(1);
             charging.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> batteryEntity.blockEnergyStorage.extractEnergy(energy.receiveEnergy(batteryEntity.blockEnergyStorage.extractEnergy(batteryEntity.blockEnergyStorage.getThroughputOut(), true), false), false));
             discharging.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> batteryEntity.blockEnergyStorage.receiveEnergy(energy.extractEnergy(batteryEntity.blockEnergyStorage.receiveEnergy(batteryEntity.blockEnergyStorage.getThroughputIn(), true), false), false));
-            if (charging.getCapability(ForgeCapabilities.ENERGY).resolve().isPresent()) {
+
+            if (!charging.isEmpty() && !batteryEntity.wasEmpty0 && charging.getCapability(ForgeCapabilities.ENERGY).resolve().isPresent()) {
                 batteryEntity.differenceCharging = charging.getCapability(ForgeCapabilities.ENERGY).resolve().orElseThrow().getEnergyStored() - batteryEntity.previousCharging;
                 batteryEntity.previousCharging = charging.getCapability(ForgeCapabilities.ENERGY).resolve().orElseThrow().getEnergyStored();
             }
-            if (discharging.getCapability(ForgeCapabilities.ENERGY).isPresent()) {
+            else if (!charging.isEmpty() && batteryEntity.wasEmpty0 && charging.getCapability(ForgeCapabilities.ENERGY).resolve().isPresent()) {
+                batteryEntity.previousCharging = charging.getCapability(ForgeCapabilities.ENERGY).resolve().orElseThrow().getEnergyStored();
+                batteryEntity.differenceCharging = 0;
+            }
+            else if (charging.isEmpty()) {
+                batteryEntity.differenceCharging = 0;
+            }
+
+            if (!discharging.isEmpty() && !batteryEntity.wasEmpty1 && discharging.getCapability(ForgeCapabilities.ENERGY).isPresent()) {
                 batteryEntity.differenceDischarging = batteryEntity.previousDischarging - discharging.getCapability(ForgeCapabilities.ENERGY).resolve().orElseThrow().getEnergyStored();
                 batteryEntity.previousDischarging = discharging.getCapability(ForgeCapabilities.ENERGY).resolve().orElseThrow().getEnergyStored();
             }
+            else if (!discharging.isEmpty() && batteryEntity.wasEmpty1 && discharging.getCapability(ForgeCapabilities.ENERGY).isPresent()) {
+                batteryEntity.differenceDischarging = 0;
+                batteryEntity.previousDischarging = discharging.getCapability(ForgeCapabilities.ENERGY).resolve().orElseThrow().getEnergyStored();
+            }
+            else if (discharging.isEmpty()) {
+                batteryEntity.differenceDischarging = 0;
+            }
+
+            batteryEntity.wasEmpty0 = charging.isEmpty();
+            batteryEntity.wasEmpty1 = discharging.isEmpty();
+
             batteryEntity.changeEnergy = batteryEntity.blockEnergyStorage.getEnergyStored() - batteryEntity.lastEnergy;
             batteryEntity.lastEnergy = batteryEntity.blockEnergyStorage.getEnergyStored();
             BlockEntity blockEntityBelow = level.getBlockEntity(blockPos.below());
@@ -68,6 +88,40 @@ public class SmallBatteryBlockEntity extends BlockEntity implements MenuProvider
                 blockEntityBelow.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> energy.receiveEnergy(batteryEntity.blockEnergyStorage.extractEnergy(energy.receiveEnergy(batteryEntity.blockEnergyStorage.getThroughputOut(), true), false), false));
             }
         }
+    }
+
+    public int getItemDifferenceCharging() {
+        return differenceCharging;
+    }
+
+    public int getItemDifferenceDischarging() {
+        return differenceDischarging;
+    }
+
+    public int getItemChargingEnergy() {
+        if (stackHandler.getStackInSlot(0).getCapability(ForgeCapabilities.ENERGY).isPresent()) {
+            return stackHandler.getStackInSlot(0).getCapability(ForgeCapabilities.ENERGY).resolve().orElseThrow().getEnergyStored();
+        }
+        return 0;
+    }
+
+    public int getItemDischargingEnergy() {
+        if (stackHandler.getStackInSlot(1).getCapability(ForgeCapabilities.ENERGY).isPresent()) {
+            return stackHandler.getStackInSlot(1).getCapability(ForgeCapabilities.ENERGY).resolve().orElseThrow().getEnergyStored();
+        }
+        return 0;
+    }
+
+    public int getCurrentEnergy() {
+        return blockEnergyStorage.getEnergyStored();
+    }
+
+    public int getMaxEnergy() {
+        return blockEnergyStorage.getMaxEnergyStored();
+    }
+
+    public int getEnergyDifference() {
+        return changeEnergy;
     }
 
     public ItemStackHandler getStackHandler() {
@@ -112,129 +166,5 @@ public class SmallBatteryBlockEntity extends BlockEntity implements MenuProvider
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
         return new SmallBatteryBlockMenu(i, inventory, this, true);
-    }
-
-    private final DataSlot chargingData = new DataSlot() {
-        @Override
-        public int get() {
-            if (stackHandler.getStackInSlot(0).getCapability(ForgeCapabilities.ENERGY).resolve().isPresent()) {
-                return differenceCharging;
-            }
-            return 0;
-        }
-
-        @Override
-        public void set(int i) {
-
-        }
-    };
-
-    private final DataSlot dischargingData = new DataSlot() {
-        @Override
-        public int get() {
-            if (stackHandler.getStackInSlot(1).getCapability(ForgeCapabilities.ENERGY).resolve().isPresent()) {
-                return differenceDischarging;
-            }
-            return 0;
-        }
-
-        @Override
-        public void set(int i) {
-
-        }
-    };
-
-    private final DataSlot itemChargingEnergyData = new DataSlot() {
-        @Override
-        public int get() {
-            if (stackHandler.getStackInSlot(0).getCapability(ForgeCapabilities.ENERGY).resolve().isPresent()) {
-                return stackHandler.getStackInSlot(0).getCapability(ForgeCapabilities.ENERGY).resolve().orElseThrow().getEnergyStored();
-            }
-            return 0;
-        }
-
-        @Override
-        public void set(int i) {
-
-        }
-    };
-
-    private final DataSlot itemDischargingEnergyData = new DataSlot() {
-        @Override
-        public int get() {
-            if (stackHandler.getStackInSlot(1).getCapability(ForgeCapabilities.ENERGY).resolve().isPresent()) {
-                return stackHandler.getStackInSlot(1).getCapability(ForgeCapabilities.ENERGY).resolve().orElseThrow().getEnergyStored();
-            }
-            return 0;
-        }
-
-        @Override
-        public void set(int i) {
-
-        }
-    };
-
-    private final DataSlot currentStoredEnergyData = new DataSlot() {
-        @Override
-        public int get() {
-            return blockEnergyStorage.getEnergyStored();
-        }
-
-        @Override
-        public void set(int i) {
-
-        }
-    };
-
-    private final DataSlot maximumEnergyData = new DataSlot() {
-        @Override
-        public int get() {
-            return blockEnergyStorage.getMaxEnergyStored();
-        }
-
-        @Override
-        public void set(int i) {
-
-        }
-    };
-
-    private final DataSlot energyChangeData = new DataSlot() {
-        @Override
-        public int get() {
-            return changeEnergy;
-        }
-
-        @Override
-        public void set(int i) {
-
-        }
-    };
-
-    public DataSlot getChargingDataSlot() {
-        return chargingData;
-    }
-
-    public DataSlot getDischargingDataSlot() {
-        return dischargingData;
-    }
-
-    public DataSlot getChargingEnergy() {
-        return itemChargingEnergyData;
-    }
-
-    public DataSlot getDischargingEnergy() {
-        return itemDischargingEnergyData;
-    }
-
-    public DataSlot getMaximumEnergy() {
-        return maximumEnergyData;
-    }
-
-    public DataSlot getCurrentStoredEnergyData() {
-        return currentStoredEnergyData;
-    }
-
-    public DataSlot getChangeInEnergy() {
-        return energyChangeData;
     }
 }

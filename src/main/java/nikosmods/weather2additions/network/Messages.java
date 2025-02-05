@@ -15,6 +15,7 @@ public class Messages {
     public static void register(FMLCommonSetupEvent setupEvent) {
         channel.messageBuilder(MapPacket.class, Id ++, NetworkDirection.PLAY_TO_CLIENT).decoder(MapPacket::new).encoder(MapPacket::encode).consumerMainThread(MapPacket::handle).add();
         channel.messageBuilder(AnalyserPacket.class, Id ++, NetworkDirection.PLAY_TO_CLIENT).decoder(AnalyserPacket::new).encoder(AnalyserPacket::encode).consumerMainThread(AnalyserPacket::handle).add();
+        channel.messageBuilder(EnergyPacket.class, Id ++, NetworkDirection.PLAY_TO_CLIENT).decoder(EnergyPacket::new).encoder(EnergyPacket::encode).consumerMainThread(EnergyPacket::handle).add();
     }
     public static <MSG> void sendToServer(MSG message) {
         channel.sendToServer(message);

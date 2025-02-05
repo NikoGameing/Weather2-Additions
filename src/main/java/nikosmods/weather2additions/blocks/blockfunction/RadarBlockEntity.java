@@ -25,22 +25,19 @@ import nikosmods.weather2additions.blocks.blockentityreg.BlockEntityTypes;
 import nikosmods.weather2additions.blocks.blockfunction.blockgui.RadarBlockMenu;
 import nikosmods.weather2additions.data.Maps;
 import nikosmods.weather2additions.items.itemfunction.Column;
-import nikosmods.weather2additions.items.itemfunction.ItemTablet;
-import nikosmods.weather2additions.items.itemfunction.ServerTabletMapRendering;
+import nikosmods.weather2additions.Config;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class RadarBlockEntity extends BlockEntity implements MenuProvider {
 
     public static Map<Column, Integer> otherMap = Maps.otherMap;
-    static int serverMapLoadRadius = 36;
-    public static int serverResolution = Maps.mapResolution;
-    static int maxTimer = 20;
+    static int serverMapLoadRadius = Config.RADAR_RADIUS.get();
+    public static int serverResolution = Config.RESOLUTION.get();
+    static int maxTimer = Config.RADAR_TIMER.get();
     private static int timer = maxTimer;
-    private static final float loadChance = 120; // bigger = less likely (acts as a multiplier to pretend that the distance is longer)
 
     private int lastEnergy;
     private int changeEnergy;
@@ -69,6 +66,7 @@ public class RadarBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     public static void tick(Level level, BlockPos blockPos, BlockState state, BlockEntity blockEntity) {
+        maxTimer = Config.RADAR_TIMER.get();
         RadarBlockEntity radarBlockEntity = (RadarBlockEntity) blockEntity;
         ItemStack battery = radarBlockEntity.stackHandler.getStackInSlot(0);
         battery.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> radarBlockEntity.blockEnergyStorage.receiveEnergy(energy.extractEnergy(radarBlockEntity.blockEnergyStorage.receiveEnergy(radarBlockEntity.blockEnergyStorage.getThroughputIn(), true), false), false));
@@ -114,6 +112,8 @@ public class RadarBlockEntity extends BlockEntity implements MenuProvider {
 
     public static void loadAroundBlock(BlockPos blockPos, ServerLevel level) {
         if (level != null) {
+            serverResolution = Config.RESOLUTION.get();
+            serverMapLoadRadius = Config.RADAR_RADIUS.get();
             for (int x = -serverMapLoadRadius; x <= serverMapLoadRadius; x ++) {
                 for (int z = -serverMapLoadRadius; z <= serverMapLoadRadius; z++) {
                     if (choose(x, z)) {
@@ -165,6 +165,8 @@ public class RadarBlockEntity extends BlockEntity implements MenuProvider {
     }
 
     public static boolean choose(int x, int z) {
+        // bigger = less likely (acts as a multiplier to pretend that the distance is longer)
+        float loadChance = Config.RADAR_CHANCE.get().floatValue();
         double distance = (Math.abs(x) + Math.abs(z)) * loadChance;
         double random = Math.random();
         if (distance == 0) {
@@ -261,7 +263,7 @@ public class RadarBlockEntity extends BlockEntity implements MenuProvider {
     private final DataSlot radiusData = new DataSlot() {
         @Override
         public int get() {
-            return serverResolution;
+            return Config.RADAR_RADIUS.get();
         }
 
         @Override

@@ -51,6 +51,7 @@ public abstract class CableGenericEntity extends BlockEntity implements MenuProv
             connectToSide(level, blockPos, state, blockEntity, east, CableSmall.EAST, Direction.EAST);
             connectToSide(level, blockPos, state, blockEntity, south, CableSmall.SOUTH, Direction.SOUTH);
             connectToSide(level, blockPos, state, blockEntity, west, CableSmall.WEST, Direction.WEST);
+
         }
     }
 
@@ -147,7 +148,6 @@ public abstract class CableGenericEntity extends BlockEntity implements MenuProv
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int i, @NotNull Inventory inventory, @NotNull Player player) {
-        Messages.sendToClient(new AnalyserPacket(getEnergyNetwork().getEnergyStorage().getEnergyStored(), getEnergyNetwork().getEnergyStorage().getMaxEnergyStored(), getEnergyNetwork().getEnergyStorage().getThroughputIn(), getEnergyNetwork().getCableEntities().size()), (ServerPlayer) player);
         return new NetworkInfoMenu(i, inventory, this, true);
     }
 }

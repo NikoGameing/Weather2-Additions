@@ -6,7 +6,7 @@ import nikosmods.weather2additions.blocks.blockfunction.blockgui.NetworkInfoMenu
 
 import java.util.function.Supplier;
 
-public class AnalyserPacket {
+public class AnalyserPacket implements Packet{
     private final int capacity;
     private final int throughput;
     private final int maxCapacity;
@@ -27,6 +27,7 @@ public class AnalyserPacket {
         cableNumber = byteBuffer.readInt();
         throughput = byteBuffer.readInt();
     }
+
     public void encode(FriendlyByteBuf byteBuffer) {
         byteBuffer.writeInt(capacity);
         byteBuffer.writeInt(maxCapacity);

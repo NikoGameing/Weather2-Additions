@@ -1,4 +1,4 @@
-package nikosmods.weather2additions.items.itemfunction;
+package nikosmods.weather2additions.items;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -8,18 +8,18 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import nikosmods.weather2additions.data.Maps;
+import nikosmods.weather2additions.Config;
+import nikosmods.weather2additions.items.itemfunction.ServerTabletMapRendering;
 import nikosmods.weather2additions.items.itemproperties.ItemEnergy;
 import org.jetbrains.annotations.Nullable;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.List;
 
-public class ItemTablet extends ItemEnergy {
-    public static final int maxTimer = 20;
-    public static final int mapRadius = 50;
-    public static final int resolution = Maps.mapResolution;
+import static nikosmods.weather2additions.blocks.blockfunction.blockgui.MenuGenericUtil.formatEnergy;
+import static nikosmods.weather2additions.blocks.blockfunction.blockgui.MenuGenericUtil.rgbToHex;
+
+public class Tablet extends ItemEnergy {
+    public static int maxTimer = 20;
 
     @Override
     public void inventoryTick(ItemStack p_41404_, Level p_41405_, Entity p_41406_, int p_41407_, boolean p_41408_) {
@@ -83,49 +83,21 @@ public class ItemTablet extends ItemEnergy {
         return oldStack.getItem()!=newStack.getItem();
     }
 
-    public ItemTablet(Properties properties, int paramMaxEnergy) {
-        super(properties, paramMaxEnergy);
+    public Tablet(Properties properties, int paramMaxEnergy, int throughputIn, int throughputOut) {
+        super(properties, paramMaxEnergy, throughputIn, throughputOut);
     }
 
+
     private void updateMap(ItemStack p_41404_, ServerPlayer player) {
+        maxTimer = Config.TABLET_TIMER.get();
         int energy = getTag(p_41404_).getInt("CurrentEnergy");
         if (energy > 0) {
-            energy -= 10;
+            energy -= maxTimer;
             if (energy < 0) {
                 energy = 0;
             }
             getTag(p_41404_).putInt("CurrentEnergy", energy);
             ServerTabletMapRendering.updatePlayer(player);
         }
-    }
-
-    private int rgbToHex(int r, int g, int b) {
-        return r << 16 | g << 8 | b;
-    }
-
-    private static String formatEnergy(int energy, Boolean addSymbol) {
-        String formatted = energy + "RF";
-        int energyNormal = energy;
-        if (energy < 0) {
-            energyNormal = -energy;
-        }
-        DecimalFormat decimalFormat = new DecimalFormat("##.##");
-        decimalFormat.setRoundingMode(RoundingMode.HALF_EVEN);
-        if (energyNormal >= 1000 && energyNormal < 100000) {
-            formatted = decimalFormat.format((float) energy / 1000) + "KRF";
-        }
-        else if (energyNormal >= 100000 && energyNormal < 1000000000) {
-            formatted = decimalFormat.format((float) energy / 1000000) + "MRF";
-        }
-        else if (energyNormal > 1000000000) {
-            formatted = decimalFormat.format((float) energy / 1000000000) + "GRF";
-        }
-
-        if (addSymbol && energy != 0) {
-            if (energy > 0) {
-                formatted = "+" + formatted;
-            }
-        }
-        return formatted;
     }
 }

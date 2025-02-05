@@ -11,14 +11,15 @@ import net.minecraft.world.level.material.MapColor;
 import nikosmods.weather2additions.data.Maps;
 import nikosmods.weather2additions.network.Messages;
 import nikosmods.weather2additions.network.MapPacket;
+import nikosmods.weather2additions.Config;
 
 import java.util.Map;
 
 public class ServerTabletMapRendering {
     public static Map<Column, Integer> otherMap = Maps.otherMap;
-    public static int serverMapLoadRadius = 6;
-    public static int serverResolution = Maps.mapResolution;
-    public static int serverMapRadius = Maps.tabletMapRadius;
+    public static int serverMapLoadRadius = Config.PLAYER_LOAD_RADIUS.get();
+    public static int serverResolution = Config.RESOLUTION.get();
+    public static int serverMapRadius = Config.TABLET_RADIUS.get();
 
     public static int fixColour(int colour, float dim) {
         dim = Mth.clamp(dim, 0f, 1f);
@@ -38,6 +39,7 @@ public class ServerTabletMapRendering {
 
     public static void loadAroundPlayer(Player player, ServerLevel level) {
         if (level != null) {
+            serverMapRadius = Config.PLAYER_LOAD_RADIUS.get();
             for (int x = -serverMapLoadRadius; x <= serverMapLoadRadius; x ++) {
                 for (int z = -serverMapLoadRadius; z <= serverMapLoadRadius; z++) {
                     if (choose(x, z)) {
@@ -55,6 +57,8 @@ public class ServerTabletMapRendering {
     }
 
     public static void updatePlayer(ServerPlayer player) {
+        serverMapRadius = Config.TABLET_RADIUS.get();
+        serverResolution = Config.RESOLUTION.get();
         int i = 0;
         int centerX = player.getBlockX() / serverResolution * serverResolution;
         int centerZ = player.getBlockZ() / serverResolution * serverResolution;
@@ -67,7 +71,7 @@ public class ServerTabletMapRendering {
                 map[i++] = otherMap.getOrDefault(column, 0);
             }
         }
-        Messages.sendToClient(new MapPacket(map, serverResolution, centerX, centerZ, "tablet"), player);
+        Messages.sendToClient(new MapPacket(map, serverResolution, serverMapRadius, centerX, centerZ, "tablet"), player);
     }
 
     public static boolean choose(int x, int z) {

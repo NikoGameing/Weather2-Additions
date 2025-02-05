@@ -1,6 +1,7 @@
 package nikosmods.weather2additions.blocks.blockfunction.blockgui;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -8,6 +9,8 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import nikosmods.weather2additions.blocks.blockfunction.CableGenericEntity;
 import nikosmods.weather2additions.blocks.blockreg.Blocks;
+import nikosmods.weather2additions.network.AnalyserPacket;
+import nikosmods.weather2additions.network.Messages;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -59,6 +62,7 @@ public class NetworkInfoMenu extends AbstractContainerMenu {
         maxCapacity = cableGeneric.getEnergyNetwork().getEnergyStorage().getMaxEnergyStored();
         throughput = cableGeneric.getEnergyNetwork().getEnergyStorage().getThroughputIn();
         cableNumber = cableGeneric.getEnergyNetwork().getCableEntities().size();
+        Messages.sendToClient(new AnalyserPacket(capacity, maxCapacity, throughput, cableNumber), (ServerPlayer) player);
         return stillValid(ContainerLevelAccess.create(Objects.requireNonNull(cableGeneric.getLevel()), cableGeneric.getBlockPos()), player, Blocks.CABLE_SMALL.get());
     }
 }

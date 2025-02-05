@@ -6,12 +6,15 @@
   "item.weather2_additions.network_analyser": "Network Analyser",
   "item.weather2_additions.cable_small": "Small Cable",
   "item.weather2_additions.radar_block": "Radar Block",
+  "item.weather2_additions.small_battery": "Small Battery",
+  "item.weather2_additions.detection_components": "Detection Components",
+
 
   "block.weather2_additions.small_battery_block": "Small Battery Block",
   "block.weather2_additions.cable_small": "Small Cable",
   "block.weather2_additions.radar_block": "Radar Block",
 
-  "menu.weather2_additions.networkinfoscreen": "Network Info Screen",
+  "menu.weather2_additions.networkinfoscreen": "Network Info",
   "menu.weather2_additions.radarblockscreen":"Radar",
   "menu.weather2_additions.smallbatteryblock": "Small Battery Block",
 

@@ -58,12 +58,14 @@ public class SmallBatteryBlock extends Block implements EntityBlock {
     public void onRemove(BlockState state, Level level, BlockPos blockPos, BlockState futureState, boolean isMoving) {
         if (!level.isClientSide()) {
             BlockEntity blockEntity = level.getBlockEntity(blockPos);
-            if (blockEntity instanceof SmallBatteryBlockEntity batteryBlockEntity) {
-                ItemStackHandler inventory = batteryBlockEntity.getStackHandler();
-                for (int index = 0; index < inventory.getSlots(); index++) {
-                    ItemStack item = inventory.getStackInSlot(index);
-                    ItemEntity droppedItem = new ItemEntity(level, blockPos.getX() + 0.5D, blockPos.getY() + 0.5D, blockPos.getZ() + 0.5D, item);
-                    level.addFreshEntity(droppedItem);
+            if (state.getBlock() != futureState.getBlock()) {
+                if (blockEntity instanceof SmallBatteryBlockEntity batteryBlockEntity) {
+                    ItemStackHandler inventory = batteryBlockEntity.getStackHandler();
+                    for (int index = 0; index < inventory.getSlots(); index++) {
+                        ItemStack item = inventory.getStackInSlot(index);
+                        ItemEntity droppedItem = new ItemEntity(level, blockPos.getX() + 0.5D, blockPos.getY() + 0.5D, blockPos.getZ() + 0.5D, item);
+                        level.addFreshEntity(droppedItem);
+                    }
                 }
             }
         }
