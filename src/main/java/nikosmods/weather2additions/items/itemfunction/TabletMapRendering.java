@@ -1,5 +1,6 @@
 package nikosmods.weather2additions.items.itemfunction;
 
+import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.logging.LogUtils;
@@ -8,6 +9,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import nikosmods.weather2additions.Weather2Additions;
 import nikosmods.weather2additions.data.Maps;
 import nikosmods.weather2additions.items.Tablet;
 import nikosmods.weather2additions.keyreg.KeyRegistries;
@@ -15,6 +17,10 @@ import nikosmods.weather2additions.Config;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
+import org.slf4j.Logger;
 import weather2.ClientTickHandler;
 import weather2.weathersystem.WeatherManagerClient;
 import weather2.weathersystem.storm.StormObject;
@@ -27,9 +33,12 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.RoundingMode;
+import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -39,6 +48,11 @@ public class TabletMapRendering {
     private static int selection = 0;
     private static WeatherObject selected;
     public static int tick = 0;
+    private static final int textureID = TextureUtil.generateTextureId();;
+    private static byte[] previousMap;
+    private static final Logger logger = Weather2Additions.LOGGER;
+    private static ByteBuffer imageBuffer;
+
     // big resourcelocation burger
 
     private static final ResourceLocation cyclone = new ResourceLocation("weather2", "textures/radar/radar_icon_cyclone.png");
@@ -70,6 +84,21 @@ public class TabletMapRendering {
     private static final ResourceLocation battery2 = new ResourceLocation("weather2_additions", "textures/weathericon/battery/2.png");
     private static final ResourceLocation battery1 = new ResourceLocation("weather2_additions", "textures/weathericon/battery/1.png");
     private static final ResourceLocation battery0 = new ResourceLocation("weather2_additions", "textures/weathericon/battery/0.png");
+
+
+    public static void renderAll(PoseStack transform, LocalPlayer player, ItemStack stack) throws IOException {
+        // renderRectangle(transform,0,0,0.2f,0.1f,1,0,1,1f); // (redundant, only used for testing)
+        // renderMap(transform, player); // legacy rendering code
+        // renderMapImageTransformations(transform, player);
+        renderMapImage(transform, player);
+        renderWeather(transform, player);
+        renderHead(transform, player);
+        renderWeatherInfo(transform, player);
+        renderCompass(transform, player);
+        renderStormInfo(transform, player);
+        renderBattery(transform, stack);
+    }
+
 
     public static @Nullable Dimension getImageDimension(InputStream inputStream) throws IOException {
         Iterator<ImageReader> iter = ImageIO.getImageReadersBySuffix("png");
@@ -136,18 +165,6 @@ public class TabletMapRendering {
         bufferBuilder.vertex(transform.last().pose(), 0.02f,0.02f,0.00011f).uv(16f/64f,8f/64f).endVertex(); // (16f/64f,8f/64f)
         bufferBuilder.vertex(transform.last().pose(), -0.02f,0.02f,0.00011f).uv(8f/64f,8f/64f).endVertex(); // (8f/64f,8f/64f)
         BufferUploader.drawWithShader(bufferBuilder.end());
-    }
-
-    public static void renderAll(PoseStack transform, LocalPlayer player, ItemStack stack) throws IOException {
-        // renderRectangle(transform,0,0,0.2f,0.1f,1,0,1,1f); // (redundant, only used for testing)
-
-        renderWeather(transform, player);
-        renderHead(transform, player);
-        renderMap(transform, player);
-        renderWeatherInfo(transform, player);
-        renderCompass(transform, player);
-        renderStormInfo(transform, player);
-        renderBattery(transform, stack);
     }
 
 
@@ -724,6 +741,7 @@ public class TabletMapRendering {
         transform.popPose();
     }
 
+    @Deprecated
     public static void renderMap(PoseStack transform, Player player) {
         int[] map = Maps.tabletMap;
         mapRadius = Maps.tabletMapRadius;
@@ -755,6 +773,78 @@ public class TabletMapRendering {
             BufferUploader.drawWithShader(bufferBuilder.end());
         }
     }
-}
 
-// im going absolutely mental, positively bonkers even
+    public static void renderMapImage(PoseStack transform, Player player) {
+        mapRadius = Config.TABLET_RADIUS.get();
+        mapResolution = Config.RESOLUTION.get();
+        byte[] map = Maps.tabletImage;
+        // byte[] map = generateByteImageGradient(151 * 3);
+        if (map != null && previousMap != map) {
+            ByteArrayInputStream input = new ByteArrayInputStream(map);
+            int width = Maps.tabletImageWidth;
+            int height = Maps.tabletImageHeight;
+            int i = 0;
+            byte[] RGBInfo = new byte[height * width * 4];
+            try {
+                BufferedImage mapImage = ImageIO.read(input);
+                for (int x = 0; x < width; x++) {
+                    for (int y = 0; y < height; y++) {
+                        int color = mapImage.getRGB(x, y);
+                        RGBInfo[i++] = (byte) (color >> 16);
+                        RGBInfo[i++] = (byte) (color >> 8);
+                        RGBInfo[i++] = (byte) (color);
+                        RGBInfo[i++] = (byte) (color >> 24);
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+            imageBuffer = MemoryUtil.memAlloc(RGBInfo.length);
+            imageBuffer.put(RGBInfo);
+
+            RenderSystem.bindTexture(textureID);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+            GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, imageBuffer.flip());
+            MemoryUtil.memFree(imageBuffer);
+        }
+        int mapX = Maps.mapX;
+        int mapY = Maps.mapY;
+
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, textureID);
+        // RenderSystem.setShaderTexture(0, new ResourceLocation("minecraft", "textures/block/dirt.png"));
+        RenderSystem.enableDepthTest();
+        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
+        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        Matrix4f matrix4f = transform.last().pose();
+
+        float offsetX = ((float) mapX - (float) player.getX() - 0.5f) / mapResolution / mapRadius;
+        float offsetY = -((float) mapY - (float) player.getZ() - 0.5f) / mapResolution / mapRadius;
+
+        float fx0 = (1f + offsetX);
+        float fy0 = (1f + offsetY);
+        float fx1 = (-1f + offsetX);
+        float fy1 = (-1f + offsetY);
+
+        // forget everything you know about UVs here, openGL does something weird and none of them become consistent with all the previous use cases
+
+        bufferBuilder.vertex(matrix4f, fx0, fy0, 0).uv(0, 1).endVertex();
+        bufferBuilder.vertex(matrix4f, fx1, fy0, 0).uv(0, 0).endVertex();
+        bufferBuilder.vertex(matrix4f, fx1, fy1, 0).uv(1, 0).endVertex();
+        bufferBuilder.vertex(matrix4f, fx0, fy1, 0).uv(1, 1).endVertex();
+
+        BufferUploader.drawWithShader(bufferBuilder.end());
+        previousMap = map;
+    }
+
+    public static byte[] generateByteImageGradient(int size) {
+        byte[] image = new byte[size * size * 3];
+        for (int i = 0; i < size * size; i++) {
+            image[i] = (byte) i;
+        }
+        return image;
+    }
+
+    // note to anyone reading this code; good luck
+
+}

@@ -31,7 +31,7 @@ public class ConfigCommands {
                         command -> {
                             if (command.getSource().hasPermission(Config.OP_LEVEL.get())) {
                                 Config.TABLET_RADIUS.set(IntegerArgumentType.getInteger(command, "radius"));
-                                command.getSource().getServer().getPlayerList().getPlayers().forEach(ServerTabletMapRendering::updatePlayer);
+                                command.getSource().getServer().getPlayerList().getPlayers().forEach(ServerTabletMapRendering::updatePlayerWithImage); // replaced updatePlayer with updatePlayerWIthImage here
                                 command.getSource().sendSuccess(() -> Component.literal("Updated tablet mapping radius to " + IntegerArgumentType.getInteger(command, "radius") + " blocks"), true);
                                 return 1;
                             }

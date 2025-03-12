@@ -8,18 +8,28 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
+import nikosmods.weather2additions.Weather2Additions;
 import nikosmods.weather2additions.data.Maps;
+import nikosmods.weather2additions.network.MapImagePacket;
 import nikosmods.weather2additions.network.Messages;
 import nikosmods.weather2additions.network.MapPacket;
 import nikosmods.weather2additions.Config;
+import org.slf4j.Logger;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.Map;
+import java.util.Objects;
 
 public class ServerTabletMapRendering {
     public static Map<Column, Integer> otherMap = Maps.otherMap;
     public static int serverMapLoadRadius = Config.PLAYER_LOAD_RADIUS.get();
     public static int serverResolution = Config.RESOLUTION.get();
     public static int serverMapRadius = Config.TABLET_RADIUS.get();
+    private static final Logger logger = Weather2Additions.LOGGER;
+    private static BufferedImage lastImage;
 
     public static int fixColour(int colour, float dim) {
         dim = Mth.clamp(dim, 0f, 1f);
@@ -56,6 +66,26 @@ public class ServerTabletMapRendering {
         }
     }
 
+    public static void updatePlayerWithImage(ServerPlayer player) {
+        serverMapRadius = Config.TABLET_RADIUS.get();
+        serverResolution = Config.RESOLUTION.get();
+        int centerX = player.getBlockX() / serverResolution * serverResolution;
+        int centerZ = player.getBlockZ() / serverResolution * serverResolution;
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        BufferedImage map = generateMapBufferedImage(player);
+        assert map != null;
+        if (lastImage == null || map.getData() != lastImage.getData()) {
+            try {
+                ImageIO.write(map, "png", output);
+                Messages.sendToClient(new MapImagePacket(output.toByteArray(), serverResolution, serverMapRadius, centerX, centerZ, map.getWidth(), map.getHeight(), "tablet"), player);
+            } catch (Exception exception) {
+                logger.error("This error should never have happened. Something is extremely wrong. Out of memory???");
+            }
+        }
+        lastImage = map;
+    }
+
+    @Deprecated
     public static void updatePlayer(ServerPlayer player) {
         serverMapRadius = Config.TABLET_RADIUS.get();
         serverResolution = Config.RESOLUTION.get();
@@ -71,7 +101,7 @@ public class ServerTabletMapRendering {
                 map[i++] = otherMap.getOrDefault(column, 0);
             }
         }
-        Messages.sendToClient(new MapPacket(map, serverResolution, serverMapRadius, centerX, centerZ, "tablet"), player);
+        Messages.sendToClient(new MapPacket(map, serverResolution, serverMapRadius, centerX, centerZ, "tabletLegacy"), player);
     }
 
     public static boolean choose(int x, int z) {
@@ -104,5 +134,48 @@ public class ServerTabletMapRendering {
             }
         }
         return Colour;
+    }
+
+    public static void writeMapImage(ServerPlayer player) {
+        logger.info("Writing to file");
+        File output = new File("map.png");
+        try {
+            ImageIO.write(Objects.requireNonNull(generateMapBufferedImage(player)), "png", output);
+        }
+        catch(Exception exception) {
+            logger.error("Error in saving file:" + exception);
+        }
+        logger.info("Saved to " + output);
+    }
+
+    public static BufferedImage generateMapBufferedImage(ServerPlayer player) {
+
+        Map<Column, Integer> map = otherMap;
+
+        try {
+            BufferedImage mapImage = new BufferedImage(Config.TABLET_RADIUS.get() * 2 + 1, Config.TABLET_RADIUS.get() * 2 + 1, BufferedImage.TYPE_INT_RGB);
+            int resolution = Config.RESOLUTION.get();
+
+            for (int x = 0; x < Config.TABLET_RADIUS.get() * 2 + 1; x++) {
+                for (int y = 0; y < Config.TABLET_RADIUS.get() * 2 + 1; y++) {
+
+                    int colour;
+
+                    if (map.get(new Column((player.getBlockX() / resolution + x - Config.TABLET_RADIUS.get()) * resolution, (player.getBlockZ() / resolution + y - Config.TABLET_RADIUS.get()) * resolution, player.level())) != null) {
+                        colour = map.get(new Column((player.getBlockX() / resolution + x - Config.TABLET_RADIUS.get())* resolution, (player.getBlockZ() / resolution + y - Config.TABLET_RADIUS.get()) * resolution, player.level()));
+                    }
+                    else {
+                        colour = 0;
+                    }
+
+                    mapImage.setRGB(x, y, colour);
+                }
+            }
+            return mapImage;
+        }
+        catch (Exception exception) {
+            Weather2Additions.LOGGER.error("Error in generation of BufferedImage:\n" + exception);
+            return null;
+        }
     }
 }

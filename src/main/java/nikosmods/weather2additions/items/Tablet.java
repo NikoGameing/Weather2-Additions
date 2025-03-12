@@ -97,7 +97,8 @@ public class Tablet extends ItemEnergy {
                 energy = 0;
             }
             getTag(p_41404_).putInt("CurrentEnergy", energy);
-            ServerTabletMapRendering.updatePlayer(player);
+            // ServerTabletMapRendering.updatePlayer(player);
+            ServerTabletMapRendering.updatePlayerWithImage(player);
         }
     }
 }
