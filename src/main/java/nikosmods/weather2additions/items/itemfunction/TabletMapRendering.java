@@ -1,5 +1,6 @@
 package nikosmods.weather2additions.items.itemfunction;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -40,18 +41,21 @@ import java.io.InputStream;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 public class TabletMapRendering {
     private static int mapResolution = Config.RESOLUTION.get();
     private static int mapRadius = Config.TABLET_RADIUS.get();
+    private static final int textureID = TextureUtil.generateTextureId();
     private static int selection = 0;
     private static WeatherObject selected;
     public static int tick = 0;
-    private static final int textureID = TextureUtil.generateTextureId();;
     private static byte[] previousMap;
     private static final Logger logger = Weather2Additions.LOGGER;
     private static ByteBuffer imageBuffer;
+    private static DecimalFormat decimalFormat;
+    private static final DecimalFormatSymbols decimalLocale = new DecimalFormatSymbols(Locale.ENGLISH);
 
     // big resourcelocation burger
 
@@ -227,8 +231,9 @@ public class TabletMapRendering {
 
     public static void renderWeatherInfo(PoseStack transform, @NotNull Player player) {
         WindManager windManager = ClientTickHandler.weatherManager.getWindManager();
-        DecimalFormat decimalFormat = new DecimalFormat("##.##");
+        decimalFormat = new DecimalFormat("##.##");
         decimalFormat.setRoundingMode(RoundingMode.DOWN);
+        decimalFormat.setDecimalFormatSymbols(decimalLocale);
         float textScaleFactor = 1.5f;
         float directionScaleFactor = 0.75f;
         float compassScaleFactor = 0.62f;
@@ -267,8 +272,9 @@ public class TabletMapRendering {
                 }
             }
         }
-        DecimalFormat decimalFormat = new DecimalFormat("##.##");
+        decimalFormat = new DecimalFormat("##.##");
         decimalFormat.setRoundingMode(RoundingMode.DOWN);
+        decimalFormat.setDecimalFormatSymbols(decimalLocale);
         ResourceLocation name = rainText;
         int stormSize = 0;
         float stormTime = 0;
@@ -697,8 +703,9 @@ public class TabletMapRendering {
 
     public static void renderBattery(PoseStack transform, @NotNull ItemStack stack) {
         float energyDecimalPercent = 1;
-        DecimalFormat decimalFormat = new DecimalFormat("##.##");
+        decimalFormat = new DecimalFormat("##.##");
         decimalFormat.setRoundingMode(RoundingMode.DOWN);
+        decimalFormat.setDecimalFormatSymbols(decimalLocale);
         float size = 0.6f;
         ResourceLocation batteryIcon = battery0;
         if (stack.getTag() != null) {
@@ -802,9 +809,9 @@ public class TabletMapRendering {
             imageBuffer.put(RGBInfo);
 
             RenderSystem.bindTexture(textureID);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-            GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, imageBuffer.flip());
+            GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+            GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+            GlStateManager._texImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, imageBuffer.flip().asIntBuffer());
             MemoryUtil.memFree(imageBuffer);
         }
         int mapX = Maps.mapX;
@@ -813,7 +820,6 @@ public class TabletMapRendering {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, textureID);
         // RenderSystem.setShaderTexture(0, new ResourceLocation("minecraft", "textures/block/dirt.png"));
-        RenderSystem.enableDepthTest();
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
         Matrix4f matrix4f = transform.last().pose();
