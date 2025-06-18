@@ -811,6 +811,12 @@ public class TabletMapRendering {
             RenderSystem.bindTexture(textureID);
             GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
             GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+            if (width <= 0 || height <= 0 || imageBuffer == null || imageBuffer.capacity() == 0) {
+                 LogUtils.getLogger().warn("[Weather2Additions] Invalid texture data — skipping texture upload.");
+                MemoryUtil.memFree(imageBuffer);
+                return;
+            }
+
             GlStateManager._texImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, imageBuffer.flip().asIntBuffer());
             MemoryUtil.memFree(imageBuffer);
         }
