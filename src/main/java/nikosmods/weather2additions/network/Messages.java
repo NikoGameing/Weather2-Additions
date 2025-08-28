@@ -2,6 +2,7 @@ package nikosmods.weather2additions.network;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
@@ -37,5 +38,8 @@ public class Messages {
     }
     public static <MSG> void sendToClient(MSG message, ServerPlayer player) {
         channel.send(PacketDistributor.PLAYER.with(() -> player), message);
+    }
+    public static <MSG> void sendToPlayersTrackingChunk(MSG message, LevelChunk chunk) {
+        channel.send(PacketDistributor.TRACKING_CHUNK.with(() -> chunk), message);
     }
 }

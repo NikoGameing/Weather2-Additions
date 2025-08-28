@@ -23,6 +23,7 @@ public class CreativeTabs {
                 output.accept(Items.RADAR_BLOCK.get());
                 output.accept(Items.DETECTION_COMPONENTS.get());
                 output.accept(Items.SMALL_BATTERY.get());
+                output.accept(Items.SCREEN_BLOCK.get());
             })
             .build());
     public static void register(IEventBus eventBus) {

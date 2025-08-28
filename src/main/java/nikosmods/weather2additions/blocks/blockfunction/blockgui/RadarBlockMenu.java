@@ -11,7 +11,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.SlotItemHandler;
 import nikosmods.weather2additions.blocks.blockfunction.RadarBlockEntity;
 import nikosmods.weather2additions.blocks.blockreg.Blocks;
-import nikosmods.weather2additions.data.Maps;
+import nikosmods.weather2additions.mapdata.MapOwners;
+import nikosmods.weather2additions.mapdata.Maps;
 import nikosmods.weather2additions.items.itemfunction.Column;
 import nikosmods.weather2additions.network.Messages;
 import nikosmods.weather2additions.network.MapPacket;
@@ -81,7 +82,7 @@ public class RadarBlockMenu extends AbstractContainerMenu {
                 map[i++] = otherMap.getOrDefault(column, 0);
             }
         }
-        MapPacket mapPacket = new MapPacket(map, mapResolution, 0, 0, 0, "radar");
+        MapPacket mapPacket = new MapPacket(map, mapResolution, 0, 0, 0, MapOwners.RADAR);
         Messages.sendToClient(mapPacket, serverPlayer);
         return stillValid(ContainerLevelAccess.create(Objects.requireNonNull(radarBlock.getLevel()), radarBlock.getBlockPos()), player, Blocks.RADAR_BLOCK.get());
     }

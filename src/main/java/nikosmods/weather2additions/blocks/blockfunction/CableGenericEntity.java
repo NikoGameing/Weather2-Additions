@@ -4,13 +4,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraftforge.common.capabilities.Capability;
@@ -18,11 +18,8 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.IEnergyStorage;
 import nikosmods.weather2additions.Weather2Additions;
-import nikosmods.weather2additions.blocks.CableSmall;
-import nikosmods.weather2additions.blocks.blockentityreg.BlockEntityTypes;
+import nikosmods.weather2additions.blocks.Connections;
 import nikosmods.weather2additions.blocks.blockfunction.blockgui.NetworkInfoMenu;
-import nikosmods.weather2additions.network.AnalyserPacket;
-import nikosmods.weather2additions.network.Messages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -38,40 +35,29 @@ public abstract class CableGenericEntity extends BlockEntity implements MenuProv
     EnergyNetwork energyNetwork;
 
     public static void tick(Level level, BlockPos blockPos, BlockState state, BlockEntity blockEntity) {
-        if (!level.isClientSide()){
-            BlockEntity above = level.getBlockEntity(blockPos.above());
-            BlockEntity below = level.getBlockEntity(blockPos.below());
-            BlockEntity north = level.getBlockEntity(blockPos.north());
-            BlockEntity east = level.getBlockEntity(blockPos.east());
-            BlockEntity south = level.getBlockEntity(blockPos.south());
-            BlockEntity west = level.getBlockEntity(blockPos.west());
-            connectToSide(level, blockPos, state, blockEntity, above, CableSmall.UP, Direction.UP);
-            connectToSide(level, blockPos, state, blockEntity, below, CableSmall.DOWN, Direction.DOWN);
-            connectToSide(level, blockPos, state, blockEntity, north, CableSmall.NORTH, Direction.NORTH);
-            connectToSide(level, blockPos, state, blockEntity, east, CableSmall.EAST, Direction.EAST);
-            connectToSide(level, blockPos, state, blockEntity, south, CableSmall.SOUTH, Direction.SOUTH);
-            connectToSide(level, blockPos, state, blockEntity, west, CableSmall.WEST, Direction.WEST);
-
-        }
+        CableGenericEntity cableGeneric = (CableGenericEntity) blockEntity;
+        cableGeneric.doTick(level, blockPos, state, blockEntity);
     }
 
-    public static void connectToSide(Level level, BlockPos blockPos, BlockState state, BlockEntity blockEntity, BlockEntity blockAdjacent, EnumProperty<CableSmall.Connection> side, Direction sideDirectional) {
+    public abstract void doTick(Level level, BlockPos blockPos, BlockState state, BlockEntity blockEntity);
+
+    public void connectToSide(Level level, BlockPos blockPos, BlockState state, BlockEntity blockEntity, BlockEntity blockAdjacent, EnumProperty<Connections> side, Direction sideDirectional) {
         CableGenericEntity cableEntity = (CableGenericEntity) blockEntity;
         if (blockAdjacent == null) {
-            setState(state, level, state.setValue(side, CableSmall.Connection.NONE), blockPos);
+            setState(state, level, state.setValue(side, Connections.NONE), blockPos);
         }
         else if (blockAdjacent instanceof CableGenericEntity genericEntity) {
             cableEntity.mergeNetworks(genericEntity.energyNetwork);
-            setState(state, level, state.setValue(side, CableSmall.Connection.CABLE), blockPos);
+            setState(state, level, state.setValue(side, Connections.SIMILAR), blockPos);
         }
         else {
             LazyOptional<IEnergyStorage> potentialConsumer = blockAdjacent.getCapability(ForgeCapabilities.ENERGY, sideDirectional.getOpposite());
             potentialConsumer.ifPresent(consumer -> cableEntity.energyNetwork.getEnergyStorage().extractEnergy(consumer.receiveEnergy(cableEntity.energyNetwork.getEnergyStorage().extractEnergy(cableEntity.energyNetwork.getEnergyStorage().getThroughputOut(), true), false), false));
             if (!potentialConsumer.isPresent()) {
-                setState(state, level, state.setValue(side, CableSmall.Connection.NONE), blockPos);
+                setState(state, level, state.setValue(side, Connections.NONE), blockPos);
             }
             else {
-                setState(state, level, state.setValue(side, CableSmall.Connection.CONNECTED), blockPos);
+                setState(state, level, state.setValue(side, Connections.CONNECTED), blockPos);
             }
         }
     }
@@ -132,8 +118,8 @@ public abstract class CableGenericEntity extends BlockEntity implements MenuProv
         return super.getCapability(cap, side);
     }
 
-    public CableGenericEntity(BlockPos blockPos, BlockState blockState, int capacity, int throughputIn, int throughputOut) {
-        super(BlockEntityTypes.CABLE_BLOCK_ENTITY.get(), blockPos, blockState);
+    public CableGenericEntity(BlockEntityType blockEntity, BlockPos blockPos, BlockState blockState, int capacity, int throughputIn, int throughputOut) {
+        super(blockEntity, blockPos, blockState);
         this.capacity = capacity;
         this.throughputIn = throughputIn;
         this.throughputOut = throughputOut;

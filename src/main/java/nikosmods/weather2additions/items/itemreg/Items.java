@@ -23,6 +23,7 @@ public class Items {
     public static final RegistryObject<Item> CABLE_SMALL = ITEMS.register("cable_small", () -> new BlockItem(Blocks.CABLE_SMALL.get(), new Item.Properties()));
     public static final RegistryObject<Item> ANALYSER = ITEMS.register("network_analyser", () -> new NetworkAnalyser(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> RADAR_BLOCK = ITEMS.register("radar_block", () -> new BlockItem(Blocks.RADAR_BLOCK.get(), new Item.Properties()));
+    public static final RegistryObject<Item> SCREEN_BLOCK = ITEMS.register("screen_block", () -> new BlockItem(Blocks.SCREEN_BLOCK.get(), new Item.Properties()));
     // Crafting ingredients
     public static final RegistryObject<Item> DETECTION_COMPONENTS = ITEMS.register("detection_components", () -> new Item(new Item.Properties()));
 

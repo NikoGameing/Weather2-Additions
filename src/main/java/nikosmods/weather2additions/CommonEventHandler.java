@@ -7,8 +7,8 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import nikosmods.weather2additions.data.SaveMapData;
-import nikosmods.weather2additions.items.itemfunction.ServerTabletMapRendering;
+import nikosmods.weather2additions.mapdata.SaveMapData;
+import nikosmods.weather2additions.mapdata.ServerMapRendering;
 
 @Mod.EventBusSubscriber(modid = Weather2Additions.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CommonEventHandler {
@@ -31,7 +31,7 @@ public class CommonEventHandler {
         counter--;
     }
     public static void tickPlayer(Player player, ServerLevel level) {
-        ServerTabletMapRendering.loadAroundPlayer(player, level);
+        ServerMapRendering.loadAroundPlayer(player, level);
 
     }
     @SubscribeEvent

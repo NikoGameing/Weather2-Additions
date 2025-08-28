@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import nikosmods.weather2additions.data.Maps;
+import nikosmods.weather2additions.mapdata.Maps;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 

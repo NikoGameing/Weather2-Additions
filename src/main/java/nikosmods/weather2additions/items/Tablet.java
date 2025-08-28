@@ -9,7 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import nikosmods.weather2additions.Config;
-import nikosmods.weather2additions.items.itemfunction.ServerTabletMapRendering;
+import nikosmods.weather2additions.mapdata.ServerMapRendering;
 import nikosmods.weather2additions.items.itemproperties.ItemEnergy;
 import org.jetbrains.annotations.Nullable;
 
@@ -98,7 +98,7 @@ public class Tablet extends ItemEnergy {
             }
             getTag(p_41404_).putInt("CurrentEnergy", energy);
             // ServerTabletMapRendering.updatePlayer(player);
-            ServerTabletMapRendering.updatePlayerWithImage(player);
+            ServerMapRendering.updatePlayerWithImage(player);
         }
     }
 }

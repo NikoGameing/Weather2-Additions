@@ -9,6 +9,7 @@ import net.minecraftforge.registries.RegistryObject;
 import nikosmods.weather2additions.Weather2Additions;
 import nikosmods.weather2additions.blocks.CableSmall;
 import nikosmods.weather2additions.blocks.RadarBlock;
+import nikosmods.weather2additions.blocks.ScreenBlock;
 import nikosmods.weather2additions.blocks.SmallBatteryBlock;
 
 public class Blocks {
@@ -16,6 +17,7 @@ public class Blocks {
     public static final RegistryObject<Block> SMALL_BATTERY_BLOCK = blocks.register("small_battery_block", () -> new SmallBatteryBlock(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.STONE).noOcclusion()));
     public static final RegistryObject<Block> RADAR_BLOCK = blocks.register("radar_block", () -> new RadarBlock(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.STONE).noOcclusion()));
     public static final RegistryObject<Block> CABLE_SMALL = blocks.register("cable_small", () -> new CableSmall(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.STONE).noOcclusion()));
+    public static final RegistryObject<Block> SCREEN_BLOCK = blocks.register("screen_block", () -> new ScreenBlock(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.STONE).noOcclusion()));
     public static void register(IEventBus modEventBus) {
         blocks.register(modEventBus);
     }

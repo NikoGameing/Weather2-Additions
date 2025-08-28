@@ -1,0 +1,892 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenedge"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenouterback",
+        "y": 180
+      },
+      "when": {
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenouter",
+        "y": 180
+      },
+      "when": {
+        "down": "false",
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenouterleft",
+        "y": 180
+      },
+      "when": {
+        "facing": "north",
+        "left": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenoutertop",
+        "y": 180
+      },
+      "when": {
+        "facing": "north",
+        "up": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenouterright",
+        "y": 180
+      },
+      "when": {
+        "facing": "north",
+        "right": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenoutercorner",
+        "y": 180
+      },
+      "when": {
+        "AND": [
+          {
+            "facing": "north"
+          },
+          {
+            "OR": [
+              {
+                "down": "false"
+              },
+              {
+                "left": "false"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenoutercornerul",
+        "y": 180
+      },
+      "when": {
+        "AND": [
+          {
+            "facing": "north"
+          },
+          {
+            "OR": [
+              {
+                "left": "false"
+              },
+              {
+                "up": "false"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenoutercornerur",
+        "y": 180
+      },
+      "when": {
+        "AND": [
+          {
+            "facing": "north"
+          },
+          {
+            "OR": [
+              {
+                "up": "false"
+              },
+              {
+                "right": "false"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenoutercornerbr",
+        "y": 180
+      },
+      "when": {
+        "AND": [
+          {
+            "facing": "north"
+          },
+          {
+            "OR": [
+              {
+                "right": "false"
+              },
+              {
+                "down": "false"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenjoin",
+        "y": 180
+      },
+      "when": {
+        "down": "true",
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenjoinleft",
+        "y": 180
+      },
+      "when": {
+        "facing": "north",
+        "left": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenjointop",
+        "y": 180
+      },
+      "when": {
+        "facing": "north",
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenjoinright",
+        "y": 180
+      },
+      "when": {
+        "facing": "north",
+        "right": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screencornerjoin",
+        "y": 180
+      },
+      "when": {
+        "down": "true",
+        "facing": "north",
+        "left": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screencornerjoinul",
+        "y": 180
+      },
+      "when": {
+        "facing": "north",
+        "left": "true",
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screencornerjoinur",
+        "y": 180
+      },
+      "when": {
+        "facing": "north",
+        "right": "true",
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screencornerjoinbr",
+        "y": 180
+      },
+      "when": {
+        "down": "true",
+        "facing": "north",
+        "right": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenouterback",
+        "y": 270
+      },
+      "when": {
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenouter",
+        "y": 270
+      },
+      "when": {
+        "down": "false",
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenouterleft",
+        "y": 270
+      },
+      "when": {
+        "facing": "east",
+        "left": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenoutertop",
+        "y": 270
+      },
+      "when": {
+        "facing": "east",
+        "up": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenouterright",
+        "y": 270
+      },
+      "when": {
+        "facing": "east",
+        "right": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenoutercorner",
+        "y": 270
+      },
+      "when": {
+        "AND": [
+          {
+            "facing": "east"
+          },
+          {
+            "OR": [
+              {
+                "down": "false"
+              },
+              {
+                "left": "false"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenoutercornerul",
+        "y": 270
+      },
+      "when": {
+        "AND": [
+          {
+            "facing": "east"
+          },
+          {
+            "OR": [
+              {
+                "left": "false"
+              },
+              {
+                "up": "false"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenoutercornerur",
+        "y": 270
+      },
+      "when": {
+        "AND": [
+          {
+            "facing": "east"
+          },
+          {
+            "OR": [
+              {
+                "up": "false"
+              },
+              {
+                "right": "false"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenoutercornerbr",
+        "y": 270
+      },
+      "when": {
+        "AND": [
+          {
+            "facing": "east"
+          },
+          {
+            "OR": [
+              {
+                "right": "false"
+              },
+              {
+                "down": "false"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenjoin",
+        "y": 270
+      },
+      "when": {
+        "down": "true",
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenjoinleft",
+        "y": 270
+      },
+      "when": {
+        "facing": "east",
+        "left": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenjointop",
+        "y": 270
+      },
+      "when": {
+        "facing": "east",
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenjoinright",
+        "y": 270
+      },
+      "when": {
+        "facing": "east",
+        "right": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screencornerjoin",
+        "y": 270
+      },
+      "when": {
+        "down": "true",
+        "facing": "east",
+        "left": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screencornerjoinul",
+        "y": 270
+      },
+      "when": {
+        "facing": "east",
+        "left": "true",
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screencornerjoinur",
+        "y": 270
+      },
+      "when": {
+        "facing": "east",
+        "right": "true",
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screencornerjoinbr",
+        "y": 270
+      },
+      "when": {
+        "down": "true",
+        "facing": "east",
+        "right": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenouterback"
+      },
+      "when": {
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenouter"
+      },
+      "when": {
+        "down": "false",
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenouterleft"
+      },
+      "when": {
+        "facing": "south",
+        "left": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenoutertop"
+      },
+      "when": {
+        "facing": "south",
+        "up": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenouterright"
+      },
+      "when": {
+        "facing": "south",
+        "right": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenoutercorner"
+      },
+      "when": {
+        "AND": [
+          {
+            "facing": "south"
+          },
+          {
+            "OR": [
+              {
+                "down": "false"
+              },
+              {
+                "left": "false"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenoutercornerul"
+      },
+      "when": {
+        "AND": [
+          {
+            "facing": "south"
+          },
+          {
+            "OR": [
+              {
+                "left": "false"
+              },
+              {
+                "up": "false"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenoutercornerur"
+      },
+      "when": {
+        "AND": [
+          {
+            "facing": "south"
+          },
+          {
+            "OR": [
+              {
+                "up": "false"
+              },
+              {
+                "right": "false"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenoutercornerbr"
+      },
+      "when": {
+        "AND": [
+          {
+            "facing": "south"
+          },
+          {
+            "OR": [
+              {
+                "right": "false"
+              },
+              {
+                "down": "false"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenjoin"
+      },
+      "when": {
+        "down": "true",
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenjoinleft"
+      },
+      "when": {
+        "facing": "south",
+        "left": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenjointop"
+      },
+      "when": {
+        "facing": "south",
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenjoinright"
+      },
+      "when": {
+        "facing": "south",
+        "right": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screencornerjoin"
+      },
+      "when": {
+        "down": "true",
+        "facing": "south",
+        "left": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screencornerjoinul"
+      },
+      "when": {
+        "facing": "south",
+        "left": "true",
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screencornerjoinur"
+      },
+      "when": {
+        "facing": "south",
+        "right": "true",
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screencornerjoinbr"
+      },
+      "when": {
+        "down": "true",
+        "facing": "south",
+        "right": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenouterback",
+        "y": 90
+      },
+      "when": {
+        "facing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenouter",
+        "y": 90
+      },
+      "when": {
+        "down": "false",
+        "facing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenouterleft",
+        "y": 90
+      },
+      "when": {
+        "facing": "west",
+        "left": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenoutertop",
+        "y": 90
+      },
+      "when": {
+        "facing": "west",
+        "up": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenouterright",
+        "y": 90
+      },
+      "when": {
+        "facing": "west",
+        "right": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenoutercorner",
+        "y": 90
+      },
+      "when": {
+        "AND": [
+          {
+            "facing": "west"
+          },
+          {
+            "OR": [
+              {
+                "down": "false"
+              },
+              {
+                "left": "false"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenoutercornerul",
+        "y": 90
+      },
+      "when": {
+        "AND": [
+          {
+            "facing": "west"
+          },
+          {
+            "OR": [
+              {
+                "left": "false"
+              },
+              {
+                "up": "false"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenoutercornerur",
+        "y": 90
+      },
+      "when": {
+        "AND": [
+          {
+            "facing": "west"
+          },
+          {
+            "OR": [
+              {
+                "up": "false"
+              },
+              {
+                "right": "false"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenoutercornerbr",
+        "y": 90
+      },
+      "when": {
+        "AND": [
+          {
+            "facing": "west"
+          },
+          {
+            "OR": [
+              {
+                "right": "false"
+              },
+              {
+                "down": "false"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenjoin",
+        "y": 90
+      },
+      "when": {
+        "down": "true",
+        "facing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenjoinleft",
+        "y": 90
+      },
+      "when": {
+        "facing": "west",
+        "left": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenjointop",
+        "y": 90
+      },
+      "when": {
+        "facing": "west",
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screenjoinright",
+        "y": 90
+      },
+      "when": {
+        "facing": "west",
+        "right": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screencornerjoin",
+        "y": 90
+      },
+      "when": {
+        "down": "true",
+        "facing": "west",
+        "left": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screencornerjoinul",
+        "y": 90
+      },
+      "when": {
+        "facing": "west",
+        "left": "true",
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screencornerjoinur",
+        "y": 90
+      },
+      "when": {
+        "facing": "west",
+        "right": "true",
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "weather2_additions:block/blockstate/screen_block/screencornerjoinbr",
+        "y": 90
+      },
+      "when": {
+        "down": "true",
+        "facing": "west",
+        "right": "true"
+      }
+    }
+  ]
+}

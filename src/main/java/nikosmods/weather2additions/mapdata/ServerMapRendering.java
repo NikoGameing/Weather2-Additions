@@ -1,4 +1,4 @@
-package nikosmods.weather2additions.items.itemfunction;
+package nikosmods.weather2additions.mapdata;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -6,10 +6,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import nikosmods.weather2additions.Weather2Additions;
-import nikosmods.weather2additions.data.Maps;
+import nikosmods.weather2additions.items.itemfunction.Column;
 import nikosmods.weather2additions.network.MapImagePacket;
 import nikosmods.weather2additions.network.Messages;
 import nikosmods.weather2additions.network.MapPacket;
@@ -20,10 +21,11 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 
-public class ServerTabletMapRendering {
+public class ServerMapRendering {
     public static Map<Column, Integer> otherMap = Maps.otherMap;
     public static int serverMapLoadRadius = Config.PLAYER_LOAD_RADIUS.get();
     public static int serverResolution = Config.RESOLUTION.get();
@@ -77,9 +79,29 @@ public class ServerTabletMapRendering {
         if (lastImage == null || map.getData() != lastImage.getData()) {
             try {
                 ImageIO.write(map, "png", output);
-                Messages.sendToClient(new MapImagePacket(output.toByteArray(), serverResolution, serverMapRadius, centerX, centerZ, map.getWidth(), map.getHeight(), "tablet"), player);
+                Messages.sendToClient(new MapImagePacket(output.toByteArray(), serverResolution, serverMapRadius, centerX, centerZ, map.getWidth(), map.getHeight(), MapOwners.TABLET), player);
             } catch (Exception exception) {
-                logger.error("This error should never have happened. Something is extremely wrong. Out of memory???");
+                logger.error("Error in sending map to Player " + player + " with exception " + exception + ";\n" + Arrays.toString(exception.getStackTrace()));
+            }
+        }
+        lastImage = map;
+    }
+
+    public static void updateBlockWithImage(BlockEntity block, int offsetX, int offsetZ) {
+        serverMapRadius = Config.TABLET_RADIUS.get();
+        serverResolution = Config.RESOLUTION.get();
+        int centerX = block.getBlockPos().getX() + offsetX / serverResolution * serverResolution;
+        int centerZ = block.getBlockPos().getZ() + offsetZ / serverResolution * serverResolution;
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        BufferedImage map = generateMapBufferedImage(block);
+        assert map != null;
+        if (lastImage == null || map.getData() != lastImage.getData()) {
+            try {
+                ImageIO.write(map, "png", output);
+                assert block.getLevel() != null;
+                Messages.sendToPlayersTrackingChunk(new MapImagePacket(output.toByteArray(), serverResolution, serverMapRadius, centerX, centerZ, map.getWidth(), map.getHeight(), MapOwners.SCREEN), block.getLevel().getChunkAt(block.getBlockPos()));
+            } catch (Exception exception) {
+                logger.error("Error in sending map to Block " + block + " with exception " + exception + ";\n" + Arrays.toString(exception.getStackTrace()));
             }
         }
         lastImage = map;
@@ -101,7 +123,7 @@ public class ServerTabletMapRendering {
                 map[i++] = otherMap.getOrDefault(column, 0);
             }
         }
-        Messages.sendToClient(new MapPacket(map, serverResolution, serverMapRadius, centerX, centerZ, "tabletLegacy"), player);
+        Messages.sendToClient(new MapPacket(map, serverResolution, serverMapRadius, centerX, centerZ, MapOwners.LEGACY), player);
     }
 
     public static boolean choose(int x, int z) {
@@ -158,16 +180,32 @@ public class ServerTabletMapRendering {
 
             for (int x = 0; x < Config.TABLET_RADIUS.get() * 2 + 1; x++) {
                 for (int y = 0; y < Config.TABLET_RADIUS.get() * 2 + 1; y++) {
+                    int colour = map.getOrDefault(new Column((player.getBlockX() / resolution + x - Config.TABLET_RADIUS.get())* resolution, (player.getBlockZ() / resolution + y - Config.TABLET_RADIUS.get()) * resolution, player.level()), 0);
+                    mapImage.setRGB(x, y, colour);
+                }
+            }
+            return mapImage;
+        }
+        catch (Exception exception) {
+            Weather2Additions.LOGGER.error("Error in generation of BufferedImage:\n" + exception);
+            return null;
+        }
+    }
 
+    public static BufferedImage generateMapBufferedImage(BlockEntity block) {
+
+        Map<Column, Integer> map = otherMap;
+
+
+        try {
+            BufferedImage mapImage = new BufferedImage(Config.TABLET_RADIUS.get() * 2 + 1, Config.TABLET_RADIUS.get() * 2 + 1, BufferedImage.TYPE_INT_RGB);
+            int resolution = Config.RESOLUTION.get();
+
+            for (int x = 0; x < Config.TABLET_RADIUS.get() * 2 + 1; x++) {
+                for (int y = 0; y < Config.TABLET_RADIUS.get() * 2 + 1; y++) {
+                    Column queriedColumn = new Column((block.getBlockPos().getZ() / resolution + x - Config.TABLET_RADIUS.get())* resolution, (block.getBlockPos().getZ() / resolution + y - Config.TABLET_RADIUS.get()) * resolution, block.getLevel());
                     int colour;
-
-                    if (map.get(new Column((player.getBlockX() / resolution + x - Config.TABLET_RADIUS.get()) * resolution, (player.getBlockZ() / resolution + y - Config.TABLET_RADIUS.get()) * resolution, player.level())) != null) {
-                        colour = map.get(new Column((player.getBlockX() / resolution + x - Config.TABLET_RADIUS.get())* resolution, (player.getBlockZ() / resolution + y - Config.TABLET_RADIUS.get()) * resolution, player.level()));
-                    }
-                    else {
-                        colour = 0;
-                    }
-
+                    colour = map.getOrDefault(queriedColumn, 0);
                     mapImage.setRGB(x, y, colour);
                 }
             }

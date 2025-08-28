@@ -2,7 +2,6 @@ package nikosmods.weather2additions.blocks;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -31,24 +30,24 @@ import org.jetbrains.annotations.NotNull;
 
 public class CableSmall extends Block implements EntityBlock {
 
-    public static EnumProperty<Connection> UP = EnumProperty.create("up", Connection.class);
-    public static EnumProperty<Connection> DOWN = EnumProperty.create("down", Connection.class);
-    public static EnumProperty<Connection> NORTH = EnumProperty.create("north", Connection.class);
-    public static EnumProperty<Connection> EAST = EnumProperty.create("east", Connection.class);
-    public static EnumProperty<Connection> SOUTH = EnumProperty.create("south", Connection.class);
-    public static EnumProperty<Connection> WEST = EnumProperty.create("west", Connection.class);
+    public static EnumProperty<Connections> UP = EnumProperty.create("up", Connections.class);
+    public static EnumProperty<Connections> DOWN = EnumProperty.create("down", Connections.class);
+    public static EnumProperty<Connections> NORTH = EnumProperty.create("north", Connections.class);
+    public static EnumProperty<Connections> EAST = EnumProperty.create("east", Connections.class);
+    public static EnumProperty<Connections> SOUTH = EnumProperty.create("south", Connections.class);
+    public static EnumProperty<Connections> WEST = EnumProperty.create("west", Connections.class);
 
 
     public CableSmall(Properties p_55160_) {
         super(p_55160_);
         this.registerDefaultState(
                 this.stateDefinition.any()
-                        .setValue(UP, Connection.NONE)
-                        .setValue(DOWN, Connection.NONE)
-                        .setValue(NORTH, Connection.NONE)
-                        .setValue(EAST, Connection.NONE)
-                        .setValue(SOUTH, Connection.NONE)
-                        .setValue(WEST, Connection.NONE)
+                        .setValue(UP, Connections.NONE)
+                        .setValue(DOWN, Connections.NONE)
+                        .setValue(NORTH, Connections.NONE)
+                        .setValue(EAST, Connections.NONE)
+                        .setValue(SOUTH, Connections.NONE)
+                        .setValue(WEST, Connections.NONE)
         );
     }
 
@@ -81,52 +80,36 @@ public class CableSmall extends Block implements EntityBlock {
     public VoxelShape getShape(BlockState state, @NotNull BlockGetter getter, @NotNull BlockPos blockPos, @NotNull CollisionContext collisionContext) {
         VoxelShape defaultShape = Shapes.box(6.0 / 16.0, 6.0 / 16.0, 6.0 / 16.0, 10.0 / 16.0, 10.0 / 16.0, 10.0 / 16.0);
         switch (state.getValue(UP)) {
-            case CABLE, CONNECTED -> {
+            case SIMILAR, CONNECTED -> {
                 defaultShape = Shapes.join(defaultShape, Shapes.box(6.0 / 16.0, 10.0 / 16.0, 6.0 / 16.0, 10.0 / 16.0, 16.0 / 16.0, 10.0 / 16.0), BooleanOp.OR);
             }
         }
         switch (state.getValue(DOWN)) {
-            case CABLE, CONNECTED -> {
+            case SIMILAR, CONNECTED -> {
                 defaultShape = Shapes.join(defaultShape, Shapes.box(6.0/16.0, 0.0/16.0, 6.0/16.0, 10.0/16.0, 6.0/16.0, 10.0/16.0), BooleanOp.OR);
             }
         }
         switch (state.getValue(NORTH)) {
-            case CABLE, CONNECTED -> {
+            case SIMILAR, CONNECTED -> {
                 defaultShape = Shapes.join(defaultShape, Shapes.box(6.0/16.0, 6.0/16.0, 0.0/16.0, 10.0/16.0, 10.0/16.0, 6.0/16.0), BooleanOp.OR);
             }
         }
         switch (state.getValue(EAST)) {
-            case CABLE, CONNECTED -> {
+            case SIMILAR, CONNECTED -> {
                 defaultShape = Shapes.join(defaultShape, Shapes.box(10.0/16.0, 6.0/16.0, 6.0/16.0, 16.0/16.0, 10.0/16.0, 10.0/16.0), BooleanOp.OR);
             }
         }
         switch (state.getValue(SOUTH)) {
-            case CABLE, CONNECTED -> {
+            case SIMILAR, CONNECTED -> {
                 defaultShape = Shapes.join(defaultShape, Shapes.box(6.0/16.0, 6.0/16.0, 10.0/16.0, 10.0/16.0, 10.0/16.0, 16.0/16.0), BooleanOp.OR);
             }
         }
         switch (state.getValue(WEST)) {
-            case CABLE, CONNECTED -> {
+            case SIMILAR, CONNECTED -> {
                 defaultShape = Shapes.join(defaultShape, Shapes.box(0.0/16.0, 6.0/16.0, 6.0/16.0, 6.0/16.0, 10.0/16.0, 10.0/16.0), BooleanOp.OR);
             }
         }
         return defaultShape;
-    }
-
-    public enum Connection implements StringRepresentable {
-        NONE("none"),
-        CABLE("cable"),
-        CONNECTED("connected");
-
-        private final String serializedName;
-
-        Connection(String serializedName) {
-            this.serializedName = serializedName;
-        }
-
-        public @NotNull String getSerializedName() {
-            return serializedName;
-        }
     }
 
     @Override

@@ -41,6 +41,10 @@ public class Config {
             .comment("The radius of the blocks that will be loaded around the player passively in blocks (Limited by server render distance!)")
             .defineInRange("loadRadius", 6, 1, Integer.MAX_VALUE);
 
+    public static final ForgeConfigSpec.IntValue SCREEN_REFRESH_RATE = BUILDER
+            .comment("Rate at which the Screen Block will update (in ticks)")
+            .defineInRange("refreshRate", 20, 0, Integer.MAX_VALUE);
+
     public static final ForgeConfigSpec.IntValue OP_LEVEL = BUILDER
             .comment("What Operator level is required to run config commands")
             .defineInRange("opLevel", 0, 0, 4);

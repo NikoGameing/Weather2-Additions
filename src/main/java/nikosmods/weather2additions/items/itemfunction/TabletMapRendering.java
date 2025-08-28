@@ -11,7 +11,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import nikosmods.weather2additions.Weather2Additions;
-import nikosmods.weather2additions.data.Maps;
+import nikosmods.weather2additions.blocks.blockfunction.blockrenderer.ScreenRenderer;
+import nikosmods.weather2additions.mapdata.Maps;
 import nikosmods.weather2additions.items.Tablet;
 import nikosmods.weather2additions.keyreg.KeyRegistries;
 import nikosmods.weather2additions.Config;
@@ -19,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import weather2.ClientTickHandler;
@@ -47,13 +47,12 @@ import java.util.*;
 public class TabletMapRendering {
     private static int mapResolution = Config.RESOLUTION.get();
     private static int mapRadius = Config.TABLET_RADIUS.get();
-    private static final int textureID = TextureUtil.generateTextureId();
     private static int selection = 0;
+    private static int textureID;
     private static WeatherObject selected;
     public static int tick = 0;
     private static byte[] previousMap;
     private static final Logger logger = Weather2Additions.LOGGER;
-    private static ByteBuffer imageBuffer;
     private static DecimalFormat decimalFormat;
     private static final DecimalFormatSymbols decimalLocale = new DecimalFormatSymbols(Locale.ENGLISH);
 
@@ -784,12 +783,16 @@ public class TabletMapRendering {
     public static void renderMapImage(PoseStack transform, Player player) {
         mapRadius = Config.TABLET_RADIUS.get();
         mapResolution = Config.RESOLUTION.get();
+
         byte[] map = Maps.tabletImage;
         // byte[] map = generateByteImageGradient(151 * 3);
         if (map != null && previousMap != map) {
             ByteArrayInputStream input = new ByteArrayInputStream(map);
             int width = Maps.tabletImageWidth;
             int height = Maps.tabletImageHeight;
+            if (textureID == 0) {
+                textureID = genTextureID(width, height);
+            }
             int i = 0;
             byte[] RGBInfo = new byte[height * width * 4];
             try {
@@ -805,14 +808,14 @@ public class TabletMapRendering {
                 }
             } catch (Exception ignored) {
             }
-            imageBuffer = MemoryUtil.memAlloc(RGBInfo.length);
+            ByteBuffer imageBuffer = MemoryUtil.memAlloc(RGBInfo.length);
             imageBuffer.put(RGBInfo);
 
             RenderSystem.bindTexture(textureID);
             GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
             GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-            if (width <= 0 || height <= 0 || imageBuffer == null || imageBuffer.capacity() == 0) {
-                 LogUtils.getLogger().warn("[Weather2Additions] Invalid texture data — skipping texture upload.");
+            if (width <= 0 || height <= 0 || imageBuffer.capacity() == 0) {
+                Weather2Additions.LOGGER.warn(TabletMapRendering.class.getName() + ": " + "Skipping rendering due to invalid map data");
                 MemoryUtil.memFree(imageBuffer);
                 return;
             }
@@ -838,8 +841,6 @@ public class TabletMapRendering {
         float fx1 = (-1f + offsetX);
         float fy1 = (-1f + offsetY);
 
-        // forget everything you know about UVs here, openGL does something weird and none of them become consistent with all the previous use cases
-
         bufferBuilder.vertex(matrix4f, fx0, fy0, 0).uv(0, 1).endVertex();
         bufferBuilder.vertex(matrix4f, fx1, fy0, 0).uv(0, 0).endVertex();
         bufferBuilder.vertex(matrix4f, fx1, fy1, 0).uv(1, 0).endVertex();
@@ -849,6 +850,13 @@ public class TabletMapRendering {
         previousMap = map;
     }
 
+
+    public static int genTextureID(int width, int height) {
+        int textureID = TextureUtil.generateTextureId();
+        TextureUtil.prepareImage(textureID, width, height);
+        return textureID;
+    }
+
     public static byte[] generateByteImageGradient(int size) {
         byte[] image = new byte[size * size * 3];
         for (int i = 0; i < size * size; i++) {
@@ -856,7 +864,6 @@ public class TabletMapRendering {
         }
         return image;
     }
-
     // note to anyone reading this code; good luck
 
 }

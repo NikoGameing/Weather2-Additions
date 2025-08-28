@@ -2,11 +2,9 @@ package nikosmods.weather2additions.network;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
-import nikosmods.weather2additions.data.Maps;
+import nikosmods.weather2additions.mapdata.MapOwners;
+import nikosmods.weather2additions.mapdata.Maps;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.function.Supplier;
 
@@ -18,10 +16,10 @@ public class MapImagePacket implements Packet {
     private final int z;
     private final int width;
     private final int height;
-    private final String ownership;
+    private final MapOwners ownership;
 
 
-    public MapImagePacket(byte[] map, int resolution, int radius, int x, int z, int width, int height, String ownership) {
+    public MapImagePacket(byte[] map, int resolution, int radius, int x, int z, int width, int height, MapOwners ownership) {
         this.resolution = resolution;
         this.radius = radius;
         this.x = x;
@@ -41,7 +39,7 @@ public class MapImagePacket implements Packet {
         height = byteBuffer.readInt();
         resolution = byteBuffer.readInt();
         radius = byteBuffer.readInt();
-        ownership = byteBuffer.readUtf();
+        ownership = byteBuffer.readEnum(MapOwners.class);
     }
 
     public void encode(FriendlyByteBuf byteBuffer) throws IOException {
@@ -52,7 +50,7 @@ public class MapImagePacket implements Packet {
         byteBuffer.writeInt(height);
         byteBuffer.writeInt(resolution);
         byteBuffer.writeInt(radius);
-        byteBuffer.writeUtf(ownership);
+        byteBuffer.writeEnum(ownership);
     }
 
     public void handle(Supplier <NetworkEvent.Context> supplier){

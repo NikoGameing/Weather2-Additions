@@ -23,7 +23,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import nikosmods.weather2additions.blocks.RadarBlock;
 import nikosmods.weather2additions.blocks.blockentityreg.BlockEntityTypes;
 import nikosmods.weather2additions.blocks.blockfunction.blockgui.RadarBlockMenu;
-import nikosmods.weather2additions.data.Maps;
+import nikosmods.weather2additions.mapdata.Maps;
 import nikosmods.weather2additions.items.itemfunction.Column;
 import nikosmods.weather2additions.Config;
 import org.jetbrains.annotations.NotNull;

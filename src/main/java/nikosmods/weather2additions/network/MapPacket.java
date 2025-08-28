@@ -2,7 +2,8 @@ package nikosmods.weather2additions.network;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
-import nikosmods.weather2additions.data.Maps;
+import nikosmods.weather2additions.mapdata.MapOwners;
+import nikosmods.weather2additions.mapdata.Maps;
 
 import java.util.function.Supplier;
 
@@ -12,10 +13,10 @@ public class MapPacket implements Packet {
     private final int radius;
     private final int x;
     private final int z;
-    private final String ownership;
+    private final MapOwners ownership;
 
 
-    public MapPacket(int [] map, int resolution, int radius, int x, int z, String ownership) {
+    public MapPacket(int [] map, int resolution, int radius, int x, int z, MapOwners ownership) {
         this.resolution = resolution;
         this.radius = radius;
         this.x = x;
@@ -31,7 +32,7 @@ public class MapPacket implements Packet {
         z = byteBuffer.readInt();
         resolution = byteBuffer.readInt();
         radius = byteBuffer.readInt();
-        ownership = byteBuffer.readUtf();
+        ownership = byteBuffer.readEnum(MapOwners.class);
     }
 
     public void encode(FriendlyByteBuf byteBuffer) {
@@ -40,7 +41,7 @@ public class MapPacket implements Packet {
         byteBuffer.writeInt(z);
         byteBuffer.writeInt(resolution);
         byteBuffer.writeInt(radius);
-        byteBuffer.writeUtf(ownership);
+        byteBuffer.writeEnum(ownership);
     }
 
     public void handle(Supplier <NetworkEvent.Context> supplier){
