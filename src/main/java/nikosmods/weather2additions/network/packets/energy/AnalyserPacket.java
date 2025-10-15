@@ -1,12 +1,13 @@
-package nikosmods.weather2additions.network;
+package nikosmods.weather2additions.network.packets.energy;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 import nikosmods.weather2additions.blocks.blockfunction.blockgui.NetworkInfoMenu;
+import nikosmods.weather2additions.network.Packet;
 
 import java.util.function.Supplier;
 
-public class AnalyserPacket implements Packet{
+public class AnalyserPacket implements Packet {
     private final int capacity;
     private final int throughput;
     private final int maxCapacity;

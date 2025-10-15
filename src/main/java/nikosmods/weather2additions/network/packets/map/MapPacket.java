@@ -1,9 +1,10 @@
-package nikosmods.weather2additions.network;
+package nikosmods.weather2additions.network.packets.map;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 import nikosmods.weather2additions.mapdata.MapOwners;
 import nikosmods.weather2additions.mapdata.Maps;
+import nikosmods.weather2additions.network.Packet;
 
 import java.util.function.Supplier;
 

@@ -1,8 +1,9 @@
-package nikosmods.weather2additions.network;
+package nikosmods.weather2additions.network.packets.energy;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 import nikosmods.weather2additions.blocks.blockfunction.blockgui.SmallBatteryBlockMenu;
+import nikosmods.weather2additions.network.Packet;
 
 import java.util.function.Supplier;
 

@@ -32,7 +32,6 @@ public class CommonEventHandler {
     }
     public static void tickPlayer(Player player, ServerLevel level) {
         ServerMapRendering.loadAroundPlayer(player, level);
-
     }
     @SubscribeEvent
     public static void onServerStart(ServerStartedEvent startedEvent) {

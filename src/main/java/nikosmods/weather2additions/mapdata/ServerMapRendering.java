@@ -11,10 +11,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import nikosmods.weather2additions.Weather2Additions;
 import nikosmods.weather2additions.items.itemfunction.Column;
-import nikosmods.weather2additions.network.MapImagePacket;
+import nikosmods.weather2additions.network.packets.map.MapImagePacket;
 import nikosmods.weather2additions.network.Messages;
-import nikosmods.weather2additions.network.MapPacket;
+import nikosmods.weather2additions.network.packets.map.MapPacket;
 import nikosmods.weather2additions.Config;
+import nikosmods.weather2additions.network.packets.map.ScreenMapPacket;
+import nikosmods.weather2additions.network.packets.map.TabletMapPacket;
 import org.slf4j.Logger;
 
 import javax.imageio.ImageIO;
@@ -87,6 +89,25 @@ public class ServerMapRendering {
         lastImage = map;
     }
 
+    public static void updateTablet(ServerPlayer player) {
+        serverMapRadius = Config.TABLET_RADIUS.get();
+        serverResolution = Config.RESOLUTION.get();
+        int centerX = player.getBlockX() / serverResolution * serverResolution;
+        int centerZ = player.getBlockZ() / serverResolution * serverResolution;
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        BufferedImage map = generateMapBufferedImage(player);
+        assert map != null;
+        if (lastImage == null || map.getData() != lastImage.getData()) {
+            try {
+                ImageIO.write(map, "png", output);
+                Messages.sendToClient(new TabletMapPacket(output.toByteArray(), map.getWidth(), map.getHeight(), serverResolution, serverMapRadius, centerX, centerZ), player);
+            } catch (Exception exception) {
+                logger.error("Error in sending map to Player " + player + " with exception " + exception + ";\n" + Arrays.toString(exception.getStackTrace()));
+            }
+        }
+        lastImage = map;
+    }
+
     public static void updateBlockWithImage(BlockEntity block, int offsetX, int offsetZ) {
         serverMapRadius = Config.TABLET_RADIUS.get();
         serverResolution = Config.RESOLUTION.get();
@@ -99,7 +120,7 @@ public class ServerMapRendering {
             try {
                 ImageIO.write(map, "png", output);
                 assert block.getLevel() != null;
-                Messages.sendToPlayersTrackingChunk(new MapImagePacket(output.toByteArray(), serverResolution, serverMapRadius, centerX, centerZ, map.getWidth(), map.getHeight(), MapOwners.SCREEN), block.getLevel().getChunkAt(block.getBlockPos()));
+                Messages.sendToPlayersTrackingChunk(new ScreenMapPacket(output.toByteArray(), map.getWidth(), map.getHeight(), serverResolution, serverMapRadius, centerX, centerZ, block.getBlockPos()), block.getLevel().getChunkAt(block.getBlockPos()));
             } catch (Exception exception) {
                 logger.error("Error in sending map to Block " + block + " with exception " + exception + ";\n" + Arrays.toString(exception.getStackTrace()));
             }
@@ -158,11 +179,23 @@ public class ServerMapRendering {
         return Colour;
     }
 
-    public static void writeMapImage(ServerPlayer player) {
+    public static void writePlayerMapImage(ServerPlayer player) {
         logger.info("Writing to file");
         File output = new File("map.png");
         try {
             ImageIO.write(Objects.requireNonNull(generateMapBufferedImage(player)), "png", output);
+        }
+        catch(Exception exception) {
+            logger.error("Error in saving file:" + exception);
+        }
+        logger.info("Saved to " + output);
+    }
+
+    public static void writeBlockMapImage(BlockEntity blockEntity) {
+        logger.info("Writing to file");
+        File output = new File("map.png");
+        try {
+            ImageIO.write(Objects.requireNonNull(generateMapBufferedImage(blockEntity)), "png", output);
         }
         catch(Exception exception) {
             logger.error("Error in saving file:" + exception);
@@ -196,14 +229,13 @@ public class ServerMapRendering {
 
         Map<Column, Integer> map = otherMap;
 
-
         try {
             BufferedImage mapImage = new BufferedImage(Config.TABLET_RADIUS.get() * 2 + 1, Config.TABLET_RADIUS.get() * 2 + 1, BufferedImage.TYPE_INT_RGB);
             int resolution = Config.RESOLUTION.get();
 
             for (int x = 0; x < Config.TABLET_RADIUS.get() * 2 + 1; x++) {
                 for (int y = 0; y < Config.TABLET_RADIUS.get() * 2 + 1; y++) {
-                    Column queriedColumn = new Column((block.getBlockPos().getZ() / resolution + x - Config.TABLET_RADIUS.get())* resolution, (block.getBlockPos().getZ() / resolution + y - Config.TABLET_RADIUS.get()) * resolution, block.getLevel());
+                    Column queriedColumn = new Column((block.getBlockPos().getX() / resolution + x - Config.TABLET_RADIUS.get()) * resolution, (block.getBlockPos().getZ() / resolution + y - Config.TABLET_RADIUS.get()) * resolution, block.getLevel());
                     int colour;
                     colour = map.getOrDefault(queriedColumn, 0);
                     mapImage.setRGB(x, y, colour);

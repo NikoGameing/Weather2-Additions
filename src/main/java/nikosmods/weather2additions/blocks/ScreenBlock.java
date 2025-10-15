@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.MapColor;
 import nikosmods.weather2additions.blocks.blockfunction.ScreenBlockEntity;
+import nikosmods.weather2additions.mapdata.BlockMapDataList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,4 +67,10 @@ public class ScreenBlock extends Block implements EntityBlock {
         p_49915_.add(UP, DOWN, LEFT, RIGHT, FACING);
     }
 
+    @Override
+    public void onRemove(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos blockPos, @NotNull BlockState futureState, boolean isMoving) {
+        if (state.getBlock() != futureState.getBlock())
+            BlockMapDataList.removeBlock(blockPos);
+        super.onRemove(state, level, blockPos, futureState, isMoving);
+    }
 }

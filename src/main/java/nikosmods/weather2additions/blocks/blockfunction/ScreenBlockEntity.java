@@ -13,17 +13,30 @@ import nikosmods.weather2additions.Config;
 import nikosmods.weather2additions.blocks.ScreenBlock;
 import nikosmods.weather2additions.blocks.blockentityreg.BlockEntityTypes;
 import nikosmods.weather2additions.blocks.blockreg.Blocks;
-import nikosmods.weather2additions.mapdata.Maps;
+import nikosmods.weather2additions.mapdata.BlockMapDataList;
 import nikosmods.weather2additions.mapdata.ServerMapRendering;
 
 public class ScreenBlockEntity extends CableGenericEntity {
 
-    private static byte[] previousMap;
-    private static byte[] validatedMap;
     private static int refreshNumber;
+    float offsetX = 0;
+    float offsetY = 0;
 
-    public byte[] getMapImageByteArray() {
-        return validatedMap;
+    public float getOffsetX() {
+        return offsetX;
+    }
+
+    public float getOffsetY() {
+        return offsetY;
+    }
+
+    @Override
+    public void onLoad() {
+        assert level != null;
+        if (level.isClientSide()) {
+            BlockMapDataList.addBlock(getBlockPos());
+        }
+        super.onLoad();
     }
 
     public ScreenBlockEntity(BlockPos p_155229_, BlockState p_155230_) {
@@ -33,22 +46,11 @@ public class ScreenBlockEntity extends CableGenericEntity {
     @Override
     public void doTick(Level level, BlockPos blockPos, BlockState state, BlockEntity blockEntity) {
         int refreshRate = Config.SCREEN_REFRESH_RATE.get();
-        byte[] map = Maps.screenImage;
-        int width = Maps.screenImageWidth;
-        int height = Maps.screenImageHeight;
-        int mapResolution = Maps.mapResolution;
-        int mapX = Maps.mapX;
-        int mapY = Maps.mapY;
-        int mapRadius = Maps.tabletMapRadius;
         refreshNumber += 1;
         if (level.isClientSide()) {
-            if (refreshNumber >= refreshRate && map != null && map != previousMap && (width != 0 || height != 0 || map.length != 0)) {
-                validatedMap = map;
+            if (refreshNumber >= refreshRate) {
                 refreshNumber = 0;
             }
-            float offsetX = (((float) mapX - (float) blockPos.getX() - 0.5f) / mapResolution / mapRadius);
-            float offsetY = -(((float) mapY - (float) blockPos.getZ() - 0.5f) / mapResolution / mapRadius);
-            previousMap = map;
         }
         if (!level.isClientSide()) {
             BlockEntity above = level.getBlockEntity(blockPos.above());
@@ -71,11 +73,11 @@ public class ScreenBlockEntity extends CableGenericEntity {
             }
 
             if (!state.getValue(ScreenBlock.UP) && !state.getValue(ScreenBlock.DOWN) && !state.getValue(ScreenBlock.LEFT) && !state.getValue(ScreenBlock.RIGHT)) {
-
+                // idk if something was meant to go here i'll remember later maybe?
             }
 
             if (refreshNumber >= refreshRate) {
-                ServerMapRendering.updateBlockWithImage(blockEntity, 0 , 0);
+                ServerMapRendering.updateBlockWithImage(blockEntity, 0, 0);
                 refreshNumber = 0;
             }
         }

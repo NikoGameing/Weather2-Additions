@@ -1,11 +1,11 @@
-package nikosmods.weather2additions.network;
+package nikosmods.weather2additions.network.packets.map;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 import nikosmods.weather2additions.mapdata.MapOwners;
 import nikosmods.weather2additions.mapdata.Maps;
+import nikosmods.weather2additions.network.Packet;
 
-import java.io.IOException;
 import java.util.function.Supplier;
 
 public class MapImagePacket implements Packet {
@@ -30,8 +30,7 @@ public class MapImagePacket implements Packet {
         this.ownership = ownership;
     }
 
-
-    public MapImagePacket(FriendlyByteBuf byteBuffer) throws IOException {
+    public MapImagePacket(FriendlyByteBuf byteBuffer) {
         map = byteBuffer.readByteArray();
         x = byteBuffer.readInt();
         z = byteBuffer.readInt();
@@ -42,7 +41,7 @@ public class MapImagePacket implements Packet {
         ownership = byteBuffer.readEnum(MapOwners.class);
     }
 
-    public void encode(FriendlyByteBuf byteBuffer) throws IOException {
+    public void encode(FriendlyByteBuf byteBuffer) {
         byteBuffer.writeByteArray(map);
         byteBuffer.writeInt(x);
         byteBuffer.writeInt(z);

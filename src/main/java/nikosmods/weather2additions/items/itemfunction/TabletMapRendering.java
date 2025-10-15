@@ -11,11 +11,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import nikosmods.weather2additions.Weather2Additions;
-import nikosmods.weather2additions.blocks.blockfunction.blockrenderer.ScreenRenderer;
 import nikosmods.weather2additions.mapdata.Maps;
 import nikosmods.weather2additions.items.Tablet;
 import nikosmods.weather2additions.keyreg.KeyRegistries;
 import nikosmods.weather2additions.Config;
+import nikosmods.weather2additions.mapdata.TabletMapData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -51,8 +51,7 @@ public class TabletMapRendering {
     private static int textureID;
     private static WeatherObject selected;
     public static int tick = 0;
-    private static byte[] previousMap;
-    private static final Logger logger = Weather2Additions.LOGGER;
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static DecimalFormat decimalFormat;
     private static final DecimalFormatSymbols decimalLocale = new DecimalFormatSymbols(Locale.ENGLISH);
 
@@ -781,15 +780,14 @@ public class TabletMapRendering {
     }
 
     public static void renderMapImage(PoseStack transform, Player player) {
-        mapRadius = Config.TABLET_RADIUS.get();
-        mapResolution = Config.RESOLUTION.get();
-
-        byte[] map = Maps.tabletImage;
+        byte[] map = TabletMapData.image;
         // byte[] map = generateByteImageGradient(151 * 3);
-        if (map != null && previousMap != map) {
+        if (map != null) {
+            mapRadius = TabletMapData.radius;
+            mapResolution = TabletMapData.resolution;
             ByteArrayInputStream input = new ByteArrayInputStream(map);
-            int width = Maps.tabletImageWidth;
-            int height = Maps.tabletImageHeight;
+            int width = TabletMapData.width;
+            int height = TabletMapData.height;
             if (textureID == 0) {
                 textureID = genTextureID(width, height);
             }
@@ -815,7 +813,7 @@ public class TabletMapRendering {
             GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
             GlStateManager._texParameter(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
             if (width <= 0 || height <= 0 || imageBuffer.capacity() == 0) {
-                Weather2Additions.LOGGER.warn(TabletMapRendering.class.getName() + ": " + "Skipping rendering due to invalid map data");
+                LOGGER.warn("Skipping rendering due to invalid map data");
                 MemoryUtil.memFree(imageBuffer);
                 return;
             }
@@ -823,8 +821,9 @@ public class TabletMapRendering {
             GlStateManager._texImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, imageBuffer.flip().asIntBuffer());
             MemoryUtil.memFree(imageBuffer);
         }
-        int mapX = Maps.mapX;
-        int mapY = Maps.mapY;
+
+        int mapX = TabletMapData.mapX;
+        int mapY = TabletMapData.mapY;
 
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, textureID);
@@ -847,7 +846,6 @@ public class TabletMapRendering {
         bufferBuilder.vertex(matrix4f, fx0, fy1, 0).uv(1, 1).endVertex();
 
         BufferUploader.drawWithShader(bufferBuilder.end());
-        previousMap = map;
     }
 
 
@@ -864,6 +862,5 @@ public class TabletMapRendering {
         }
         return image;
     }
-    // note to anyone reading this code; good luck
 
 }

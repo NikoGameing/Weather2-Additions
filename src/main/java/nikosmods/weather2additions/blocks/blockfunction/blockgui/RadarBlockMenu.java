@@ -15,7 +15,7 @@ import nikosmods.weather2additions.mapdata.MapOwners;
 import nikosmods.weather2additions.mapdata.Maps;
 import nikosmods.weather2additions.items.itemfunction.Column;
 import nikosmods.weather2additions.network.Messages;
-import nikosmods.weather2additions.network.MapPacket;
+import nikosmods.weather2additions.network.packets.map.MapPacket;
 import nikosmods.weather2additions.Config;
 import org.jetbrains.annotations.NotNull;
 

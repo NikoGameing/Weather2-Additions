@@ -9,7 +9,7 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.item.ItemStack;
 import nikosmods.weather2additions.blocks.blockfunction.CableGenericEntity;
 import nikosmods.weather2additions.blocks.blockreg.Blocks;
-import nikosmods.weather2additions.network.AnalyserPacket;
+import nikosmods.weather2additions.network.packets.energy.AnalyserPacket;
 import nikosmods.weather2additions.network.Messages;
 import org.jetbrains.annotations.NotNull;
 
