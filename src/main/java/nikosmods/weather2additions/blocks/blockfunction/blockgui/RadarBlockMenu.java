@@ -25,7 +25,7 @@ public class RadarBlockMenu extends AbstractContainerMenu {
 
     public final int inventoryOffsetY = 32;
     public final int inventoryOffsetX = 35;
-    public int mapResolution = Config.RESOLUTION.get();
+    public int mapResolution = Config.TABLET_RESOLUTION.get();
     public int mapRadius = Maps.radarMapRadius;
 
     private final Map<Column, Integer> otherMap = Maps.otherMap;
@@ -69,7 +69,7 @@ public class RadarBlockMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(@NotNull Player player) {
-        mapResolution = Config.RESOLUTION.get();
+        mapResolution = Config.TABLET_RESOLUTION.get();
         mapRadius = Maps.radarMapRadius;
         ServerPlayer serverPlayer = (ServerPlayer) player;
         int [] map = new int[98*98];

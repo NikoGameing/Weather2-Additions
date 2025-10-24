@@ -7,18 +7,23 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import nikosmods.weather2additions.Config;
+import nikosmods.weather2additions.Weather2Additions;
 import nikosmods.weather2additions.mapdata.Maps;
 import nikosmods.weather2additions.mapdata.ServerMapRendering;
 
 public class ConfigCommands {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("weather2_additions").
+        dispatcher.register(Commands.literal(Weather2Additions.MODID).
 
-                then(Commands.literal("set_resolution").then(Commands.argument("resolution", IntegerArgumentType.integer(1)).executes(
+                then(Commands.literal("config").
+
+                then(Commands.literal("tablet").
+
+                then(Commands.literal("set_tablet_resolution").then(Commands.argument("resolution", IntegerArgumentType.integer(1)).executes(
                         command -> {
                             if (command.getSource().hasPermission(Config.OP_LEVEL.get())) {
-                                Config.RESOLUTION.set(IntegerArgumentType.getInteger(command, "resolution"));
+                                Config.TABLET_RESOLUTION.set(IntegerArgumentType.getInteger(command, "resolution"));
                                 command.getSource().sendSuccess(() -> Component.literal("Updated map resolution to " + IntegerArgumentType.getInteger(command, "resolution") + " blocks per pixel"), true);
                                 return 1;
                             }
@@ -50,7 +55,13 @@ public class ConfigCommands {
                             command.getSource().sendFailure(Component.literal("You do not have the required permissions to execute this command."));
                             return 0;
                         }
-                )))
+                ))))));
+
+        dispatcher.register(Commands.literal(Weather2Additions.MODID)
+
+                .then(Commands.literal("config")
+
+                .then(Commands.literal("radar")
 
                 .then(Commands.literal("set_radar_load_radius").then(Commands.argument("blocks", IntegerArgumentType.integer(1)).executes(
                         command -> {
@@ -74,7 +85,49 @@ public class ConfigCommands {
                             command.getSource().sendFailure(Component.literal("You do not have the required permissions to execute this command."));
                             return 0;
                         }
-                )))
+                ))))));
+
+        dispatcher.register(Commands.literal(Weather2Additions.MODID)
+
+                        .then(Commands.literal("config")
+
+                        .then(Commands.literal("screen")
+
+                        .then(Commands.literal("set_screen_resolution").then(Commands.argument("resolution", IntegerArgumentType.integer(1)).executes(
+                            command -> {
+                                if (command.getSource().hasPermission(Config.OP_LEVEL.get())) {
+                                    Config.SCREEN_RESOLUTION.set(IntegerArgumentType.getInteger(command, "resolution"));
+                                    command.getSource().sendSuccess(() -> Component.literal("Updated map resolution to " + IntegerArgumentType.getInteger(command, "resolution") + " blocks per pixel"), true);
+                                    return 1;
+                                }
+                                command.getSource().sendFailure(Component.literal("You do not have the required permissions to execute this command."));
+                                return 0;
+                            }
+                    )))
+
+                        .then(Commands.literal("set_screen_radius").then(Commands.argument("radius", IntegerArgumentType.integer(1)).executes(
+                                command -> {
+                                    if (command.getSource().hasPermission(Config.OP_LEVEL.get())) {
+                                        Config.SCREEN_RADIUS.set(IntegerArgumentType.getInteger(command, "radius"));
+                                        command.getSource().getServer().getPlayerList().getPlayers().forEach(ServerMapRendering::updatePlayerWithImage); // replaced updatePlayer with updatePlayerWIthImage here
+                                        command.getSource().sendSuccess(() -> Component.literal("Updated screen mapping radius to " + IntegerArgumentType.getInteger(command, "radius") + " blocks"), true);
+                                        return 1;
+                                    }
+                                    command.getSource().sendFailure(Component.literal("You do not have the required permissions to execute this command."));
+                                    return 0;
+                                }
+
+                        ))))));
+
+
+
+
+
+                dispatcher.register(Commands.literal(Weather2Additions.MODID)
+
+                        .then(Commands.literal("config")
+
+                        .then(Commands.literal("server")
 
                 .then(Commands.literal("set_player_load_timer").then(Commands.argument("ticks", IntegerArgumentType.integer(5)).executes(
                         command -> {
@@ -118,6 +171,6 @@ public class ConfigCommands {
                             }
                             command.getSource().sendFailure(Component.literal("You do not have the required permissions to execute this command."));
                             return 0;
-                        })));
+                        })))));
     }
 }

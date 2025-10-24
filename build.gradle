@@ -146,6 +146,7 @@ dependencies {
     implementation fg.deobf("maven.modrinth:not-enough-animations:P4Uutv5a")
     runtimeOnly fg.deobf("mekanism:Mekanism:${minecraft_version}-${mekanism_version}")
     runtimeOnly fg.deobf("curse.maven:worldedit-${worldedit_cursemaven}")
+    runtimeOnly fg.deobf("maven.modrinth:spark:1.10.53-forge")
 
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime

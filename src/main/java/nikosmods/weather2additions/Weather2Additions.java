@@ -36,7 +36,6 @@ public class Weather2Additions {
     public static final String MODID = "weather2_additions";
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
-    // Creates a new Block with the id "weather2_additions:example_block", combining the namespace and path
     public Weather2Additions() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
@@ -103,16 +102,6 @@ public class Weather2Additions {
         }
         else {
             LOGGER.info("""
-                    
-                    ╬════════════════════════════════════╬
-                    ║█░░░░░░░░░█░░███████░░░░░░░░░█░░░░░░║
-                    ║█░░░░░░░░░█░█░░░░░░██░░░░░░░█░█░░░░░║
-                    ║░█░░░░░░░█░░░░░░░██░░░░░░░░█░░░█░░░░║
-                    ║░█░░░░░░░█░░░░░██░░░░░░░░░█░░░░░█░░░║
-                    ║░░█░░█░░█░░░░░█░░░░░░░░░░█████████░░║
-                    ║░░█░█░█░█░░░░█░░░░░░░░░░█░░░░░░░░░█░║
-                    ║░░░█░░░█░░░░█████████░░█░░░░░░░░░░░█║
-                    ╬════════════════════════════════════╬
                     Weather2 Additions loaded successfully!
                     """);
         }

@@ -18,17 +18,11 @@ import nikosmods.weather2additions.mapdata.ServerMapRendering;
 
 public class ScreenBlockEntity extends CableGenericEntity {
 
-    private static int refreshNumber;
-    float offsetX = 0;
-    float offsetY = 0;
+    private int refreshNumber;
+    public CollectiveScreen collectiveScreen;
+    public float offsetX = 0;
+    public float offsetY = 0;
 
-    public float getOffsetX() {
-        return offsetX;
-    }
-
-    public float getOffsetY() {
-        return offsetY;
-    }
 
     @Override
     public void onLoad() {
@@ -36,6 +30,43 @@ public class ScreenBlockEntity extends CableGenericEntity {
         if (level.isClientSide()) {
             BlockMapDataList.addBlock(getBlockPos());
         }
+        if (!level.isClientSide()) {
+            collectiveScreen = new CollectiveScreen(this);
+            BlockEntity above = level.getBlockEntity(getBlockPos().above());
+            BlockEntity below = level.getBlockEntity(getBlockPos().below());
+            BlockEntity left = level.getBlockEntity(getBlockPos().relative(getBlockState().getValue(ScreenBlock.FACING).getCounterClockWise()));
+            BlockEntity right = level.getBlockEntity(getBlockPos().relative(getBlockState().getValue(ScreenBlock.FACING).getClockWise()));
+            connectToSide(level, getBlockPos(), getBlockState(), this, above, ScreenBlock.UP, Direction.UP);
+            connectToSide(level, getBlockPos(), getBlockState(), this, below, ScreenBlock.DOWN, Direction.DOWN);
+            if (left != null && left.getBlockState().getBlock() == Blocks.SCREEN_BLOCK.get()) {
+                connectToSide(level, getBlockPos(), getBlockState(), this, left, ScreenBlock.LEFT, left.getBlockState().getValue(ScreenBlock.FACING));
+            }
+            else {
+                setState(getBlockState(), level, getBlockState().setValue(ScreenBlock.LEFT, false), getBlockPos());
+            }
+            if (right != null && right.getBlockState().getBlock() == Blocks.SCREEN_BLOCK.get()) {
+                connectToSide(level, getBlockPos(), getBlockState(), this, right, ScreenBlock.RIGHT, right.getBlockState().getValue(ScreenBlock.FACING));
+            }
+            else {
+                setState(getBlockState(), level, getBlockState().setValue(ScreenBlock.RIGHT, false), getBlockPos());
+            }
+            if (getBlockState().getValue(ScreenBlock.LEFT) && left != null && ((ScreenBlockEntity) left).collectiveScreen != null) {
+                ((ScreenBlockEntity) left).collectiveScreen.addScreenBlock(this);
+                collectiveScreen = ((ScreenBlockEntity) left).collectiveScreen;
+            }
+            else if (getBlockState().getValue(ScreenBlock.RIGHT) && right != null && ((ScreenBlockEntity) right).collectiveScreen != null) {
+                ((ScreenBlockEntity) right).collectiveScreen.addScreenBlock(this);
+                collectiveScreen = ((ScreenBlockEntity) right).collectiveScreen;
+            }
+            else if (getBlockState().getValue(ScreenBlock.UP) && above != null && ((ScreenBlockEntity) above).collectiveScreen != null) {
+                ((ScreenBlockEntity) above).collectiveScreen.addScreenBlock(this);
+                collectiveScreen = ((ScreenBlockEntity) above).collectiveScreen;
+            }
+            else if (getBlockState().getValue(ScreenBlock.DOWN) && below != null && ((ScreenBlockEntity) below).collectiveScreen != null) {
+                ((ScreenBlockEntity) below).collectiveScreen.addScreenBlock(this);
+                collectiveScreen = ((ScreenBlockEntity) below).collectiveScreen;
+            }
+       }
         super.onLoad();
     }
 
@@ -72,12 +103,8 @@ public class ScreenBlockEntity extends CableGenericEntity {
                 setState(state, level, state.setValue(ScreenBlock.RIGHT, false), blockPos);
             }
 
-            if (!state.getValue(ScreenBlock.UP) && !state.getValue(ScreenBlock.DOWN) && !state.getValue(ScreenBlock.LEFT) && !state.getValue(ScreenBlock.RIGHT)) {
-                // idk if something was meant to go here i'll remember later maybe?
-            }
-
             if (refreshNumber >= refreshRate) {
-                ServerMapRendering.updateBlockWithImage(blockEntity, 0, 0);
+                ServerMapRendering.updateBlockWithImage(blockEntity, offsetX, offsetY);
                 refreshNumber = 0;
             }
         }

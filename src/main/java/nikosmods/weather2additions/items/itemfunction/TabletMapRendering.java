@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import nikosmods.weather2additions.Weather2Additions;
 import nikosmods.weather2additions.mapdata.Maps;
 import nikosmods.weather2additions.items.Tablet;
 import nikosmods.weather2additions.keyreg.KeyRegistries;
@@ -45,7 +44,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 public class TabletMapRendering {
-    private static int mapResolution = Config.RESOLUTION.get();
+    private static int mapResolution = Config.TABLET_RESOLUTION.get();
     private static int mapRadius = Config.TABLET_RADIUS.get();
     private static int selection = 0;
     private static int textureID;

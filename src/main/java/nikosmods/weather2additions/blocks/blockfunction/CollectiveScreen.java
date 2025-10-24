@@ -1,41 +1,47 @@
 package nikosmods.weather2additions.blocks.blockfunction;
 
-import java.util.ArrayList;
+import net.minecraft.world.phys.Vec3;
+import nikosmods.weather2additions.blocks.ScreenBlock;
 
-// todo: this
+import java.util.ArrayList;
 
 public class CollectiveScreen {
 
-    private final ArrayList<ScreenBlockEntity> screenBlocks = new ArrayList<>();
-    private ScreenBlockEntity bottomLeftScreen;
-    private ScreenBlockEntity topLeftScreen;
-    private ScreenBlockEntity topRightScreen;
-    private ScreenBlockEntity bottomRightScreen;
+    public final ArrayList<ScreenBlockEntity> screenBlocks = new ArrayList<>();
+    public ScreenBlockEntity bottomLeftScreen;
+    public ScreenBlockEntity topLeftScreen;
+    public ScreenBlockEntity topRightScreen;
+    public ScreenBlockEntity bottomRightScreen;
 
     public CollectiveScreen(ScreenBlockEntity sourceScreenBlock) {
-        screenBlocks.add(sourceScreenBlock);
-    }
-
-    public ArrayList<ScreenBlockEntity> getScreenBlocks() {
-        return screenBlocks;
+        addScreenBlock(sourceScreenBlock);
     }
 
     public void addScreenBlock(ScreenBlockEntity screenBlockEntity) {
         if (!screenBlocks.contains(screenBlockEntity)) {
             screenBlocks.add(screenBlockEntity);
+            update();
         }
     }
 
     public void removeScreenBlock(ScreenBlockEntity screenBlockEntity) {
         screenBlocks.remove(screenBlockEntity);
+        update();
     }
 
     private void update() {
-        int bottomLeft;
-        int bottomRight;
-        int topLeft;
-        int topRight;
+        int tBlockPosX = 0;
+        int tBlockPosY = 0;
+        int tBlockPosZ = 0;
+        for (ScreenBlockEntity blockEntity : screenBlocks) {
+            tBlockPosX += blockEntity.getBlockPos().getX();
+            tBlockPosY += blockEntity.getBlockPos().getY();
+            tBlockPosZ += blockEntity.getBlockPos().getZ();
+        }
+        Vec3 centre = new Vec3((double) tBlockPosX / screenBlocks.size(), (double) tBlockPosY / screenBlocks.size(), (double) tBlockPosZ / screenBlocks.size());
         screenBlocks.forEach(screenBlockEntity -> {
+            screenBlockEntity.offsetX = screenBlockEntity.getBlockPos().getX() - (float) centre.x;
+            screenBlockEntity.offsetY = (screenBlockEntity.getBlockPos().getY() - (float) centre.y);
         });
     }
 }

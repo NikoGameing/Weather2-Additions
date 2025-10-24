@@ -9,9 +9,13 @@ public class Config {
             .comment("These configs will persist across saves on Singleplayer.\n");
 
 
-    public static final ForgeConfigSpec.IntValue RESOLUTION = BUILDER
-            .comment("Resolution of mapped blocks (1 = 1 block, 16 = 1 chunk, will reduce radius)")
-            .defineInRange("mapResolution", 16, 1, Integer.MAX_VALUE);
+    public static final ForgeConfigSpec.IntValue TABLET_RESOLUTION = BUILDER
+            .comment("Resolution of mapped blocks (1 = 1 block, 16 = 1 chunk, will reduce radius), effective for just the tablet item")
+            .defineInRange("tabletMapResolution", 16, 1, Integer.MAX_VALUE);
+
+    public static final ForgeConfigSpec.IntValue SCREEN_RESOLUTION = BUILDER
+            .comment("Resolution of mapped blocks (1 = 1 block, 16 = 1 chunk, will reduce radius), effective for just the screen block")
+            .defineInRange("screenMapResolution", 16, 1, Integer.MAX_VALUE);
 
     public static final ForgeConfigSpec.IntValue RADAR_TIMER = BUILDER
             .comment("How often the radar should query random chunks (1 = 1 tick, 20 = 1 second) (Small values will cause lag!)")
@@ -31,6 +35,10 @@ public class Config {
 
     public static final ForgeConfigSpec.IntValue TABLET_RADIUS = BUILDER
             .comment("The radius of the tablet map (low values tend to be buggy, large values tend to be laggy)")
+            .defineInRange("tabletRadius", 50, 1, Integer.MAX_VALUE);
+
+    public static final ForgeConfigSpec.IntValue SCREEN_RADIUS = BUILDER
+            .comment("The radius of the screen map (large values tend to be laggy)")
             .defineInRange("tabletRadius", 50, 1, Integer.MAX_VALUE);
 
     public static final ForgeConfigSpec.IntValue PLAYER_LOAD_TIMER = BUILDER

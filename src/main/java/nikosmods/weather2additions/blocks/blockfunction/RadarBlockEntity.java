@@ -35,7 +35,7 @@ public class RadarBlockEntity extends BlockEntity implements MenuProvider {
 
     public static Map<Column, Integer> otherMap = Maps.otherMap;
     static int serverMapLoadRadius = Config.RADAR_RADIUS.get();
-    public static int serverResolution = Config.RESOLUTION.get();
+    public static int serverResolution = Config.TABLET_RESOLUTION.get();
     static int maxTimer = Config.RADAR_TIMER.get();
     private static int timer = maxTimer;
 
@@ -112,7 +112,7 @@ public class RadarBlockEntity extends BlockEntity implements MenuProvider {
 
     public static void loadAroundBlock(BlockPos blockPos, ServerLevel level) {
         if (level != null) {
-            serverResolution = Config.RESOLUTION.get();
+            serverResolution = Config.TABLET_RESOLUTION.get();
             serverMapLoadRadius = Config.RADAR_RADIUS.get();
             for (int x = -serverMapLoadRadius; x <= serverMapLoadRadius; x ++) {
                 for (int z = -serverMapLoadRadius; z <= serverMapLoadRadius; z++) {

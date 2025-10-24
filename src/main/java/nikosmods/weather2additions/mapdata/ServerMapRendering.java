@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import nikosmods.weather2additions.Weather2Additions;
+import nikosmods.weather2additions.blocks.blockfunction.ScreenBlockEntity;
 import nikosmods.weather2additions.items.itemfunction.Column;
 import nikosmods.weather2additions.network.packets.map.MapImagePacket;
 import nikosmods.weather2additions.network.Messages;
@@ -30,8 +31,10 @@ import java.util.Objects;
 public class ServerMapRendering {
     public static Map<Column, Integer> otherMap = Maps.otherMap;
     public static int serverMapLoadRadius = Config.PLAYER_LOAD_RADIUS.get();
-    public static int serverResolution = Config.RESOLUTION.get();
-    public static int serverMapRadius = Config.TABLET_RADIUS.get();
+    public static int tabletResolution = Config.TABLET_RESOLUTION.get();
+    public static int tabletRadius = Config.TABLET_RADIUS.get();
+    public static int screenResolution = Config.SCREEN_RESOLUTION.get();
+    public static int screenRadius = Config.SCREEN_RADIUS.get();
     private static final Logger logger = Weather2Additions.LOGGER;
     private static BufferedImage lastImage;
 
@@ -53,12 +56,12 @@ public class ServerMapRendering {
 
     public static void loadAroundPlayer(Player player, ServerLevel level) {
         if (level != null) {
-            serverMapRadius = Config.PLAYER_LOAD_RADIUS.get();
+            tabletRadius = Config.PLAYER_LOAD_RADIUS.get();
             for (int x = -serverMapLoadRadius; x <= serverMapLoadRadius; x ++) {
                 for (int z = -serverMapLoadRadius; z <= serverMapLoadRadius; z++) {
                     if (choose(x, z)) {
-                        int worldX = player.getBlockX() / serverResolution * serverResolution + x * serverResolution;
-                        int worldY = player.getBlockZ() / serverResolution * serverResolution + z * serverResolution;
+                        int worldX = player.getBlockX() / tabletResolution * tabletResolution + x * tabletResolution;
+                        int worldY = player.getBlockZ() / tabletResolution * tabletResolution + z * tabletResolution;
                         Column column = new Column(worldX, worldY, level);
                         int colour = getColour(worldX, worldY, level);
                         if (colour != 0) {
@@ -71,17 +74,17 @@ public class ServerMapRendering {
     }
 
     public static void updatePlayerWithImage(ServerPlayer player) {
-        serverMapRadius = Config.TABLET_RADIUS.get();
-        serverResolution = Config.RESOLUTION.get();
-        int centerX = player.getBlockX() / serverResolution * serverResolution;
-        int centerZ = player.getBlockZ() / serverResolution * serverResolution;
+        tabletRadius = Config.TABLET_RADIUS.get();
+        tabletResolution = Config.TABLET_RESOLUTION.get();
+        int centerX = player.getBlockX() / tabletResolution * tabletResolution;
+        int centerZ = player.getBlockZ() / tabletResolution * tabletResolution;
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         BufferedImage map = generateMapBufferedImage(player);
         assert map != null;
         if (lastImage == null || map.getData() != lastImage.getData()) {
             try {
                 ImageIO.write(map, "png", output);
-                Messages.sendToClient(new MapImagePacket(output.toByteArray(), serverResolution, serverMapRadius, centerX, centerZ, map.getWidth(), map.getHeight(), MapOwners.TABLET), player);
+                Messages.sendToClient(new MapImagePacket(output.toByteArray(), tabletResolution, tabletRadius, centerX, centerZ, map.getWidth(), map.getHeight(), MapOwners.TABLET), player);
             } catch (Exception exception) {
                 logger.error("Error in sending map to Player " + player + " with exception " + exception + ";\n" + Arrays.toString(exception.getStackTrace()));
             }
@@ -90,17 +93,17 @@ public class ServerMapRendering {
     }
 
     public static void updateTablet(ServerPlayer player) {
-        serverMapRadius = Config.TABLET_RADIUS.get();
-        serverResolution = Config.RESOLUTION.get();
-        int centerX = player.getBlockX() / serverResolution * serverResolution;
-        int centerZ = player.getBlockZ() / serverResolution * serverResolution;
+        tabletRadius = Config.TABLET_RADIUS.get();
+        tabletResolution = Config.TABLET_RESOLUTION.get();
+        int centerX = player.getBlockX() / tabletResolution * tabletResolution;
+        int centerZ = player.getBlockZ() / tabletResolution * tabletResolution;
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         BufferedImage map = generateMapBufferedImage(player);
         assert map != null;
         if (lastImage == null || map.getData() != lastImage.getData()) {
             try {
                 ImageIO.write(map, "png", output);
-                Messages.sendToClient(new TabletMapPacket(output.toByteArray(), map.getWidth(), map.getHeight(), serverResolution, serverMapRadius, centerX, centerZ), player);
+                Messages.sendToClient(new TabletMapPacket(output.toByteArray(), map.getWidth(), map.getHeight(), tabletResolution, tabletRadius, centerX, centerZ), player);
             } catch (Exception exception) {
                 logger.error("Error in sending map to Player " + player + " with exception " + exception + ";\n" + Arrays.toString(exception.getStackTrace()));
             }
@@ -108,19 +111,19 @@ public class ServerMapRendering {
         lastImage = map;
     }
 
-    public static void updateBlockWithImage(BlockEntity block, int offsetX, int offsetZ) {
-        serverMapRadius = Config.TABLET_RADIUS.get();
-        serverResolution = Config.RESOLUTION.get();
-        int centerX = block.getBlockPos().getX() + offsetX / serverResolution * serverResolution;
-        int centerZ = block.getBlockPos().getZ() + offsetZ / serverResolution * serverResolution;
+    public static void updateBlockWithImage(BlockEntity block, float offsetX, float offsetY) {
+        screenRadius = Config.SCREEN_RADIUS.get();
+        screenResolution = Config.SCREEN_RESOLUTION.get();
+        int centerX = block.getBlockPos().getX() / screenResolution * screenResolution;
+        int centerZ = block.getBlockPos().getZ() / screenResolution * screenResolution;
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        BufferedImage map = generateMapBufferedImage(block);
+        BufferedImage map = generateMapBufferedImage(block, offsetX, offsetY);
         assert map != null;
         if (lastImage == null || map.getData() != lastImage.getData()) {
             try {
                 ImageIO.write(map, "png", output);
                 assert block.getLevel() != null;
-                Messages.sendToPlayersTrackingChunk(new ScreenMapPacket(output.toByteArray(), map.getWidth(), map.getHeight(), serverResolution, serverMapRadius, centerX, centerZ, block.getBlockPos()), block.getLevel().getChunkAt(block.getBlockPos()));
+                Messages.sendToPlayersTrackingChunk(new ScreenMapPacket(output.toByteArray(), map.getWidth(), map.getHeight(), screenResolution, screenRadius, centerX, centerZ, block.getBlockPos()), block.getLevel().getChunkAt(block.getBlockPos()));
             } catch (Exception exception) {
                 logger.error("Error in sending map to Block " + block + " with exception " + exception + ";\n" + Arrays.toString(exception.getStackTrace()));
             }
@@ -130,21 +133,21 @@ public class ServerMapRendering {
 
     @Deprecated
     public static void updatePlayer(ServerPlayer player) {
-        serverMapRadius = Config.TABLET_RADIUS.get();
-        serverResolution = Config.RESOLUTION.get();
+        tabletRadius = Config.TABLET_RADIUS.get();
+        tabletResolution = Config.TABLET_RESOLUTION.get();
         int i = 0;
-        int centerX = player.getBlockX() / serverResolution * serverResolution;
-        int centerZ = player.getBlockZ() / serverResolution * serverResolution;
-        int [] map = new int[4 * serverMapRadius * serverMapRadius + (serverMapRadius * 4) + 1];
-        for (int x = -serverMapRadius; x <= serverMapRadius; x ++) {
-            for (int z = -serverMapRadius; z <= serverMapRadius; z ++) {
-                int worldX = centerX + x * serverResolution;
-                int worldY = centerZ + z * serverResolution;
+        int centerX = player.getBlockX() / tabletResolution * tabletResolution;
+        int centerZ = player.getBlockZ() / tabletResolution * tabletResolution;
+        int [] map = new int[4 * tabletRadius * tabletRadius + (tabletRadius * 4) + 1];
+        for (int x = -tabletRadius; x <= tabletRadius; x ++) {
+            for (int z = -tabletRadius; z <= tabletRadius; z ++) {
+                int worldX = centerX + x * tabletResolution;
+                int worldY = centerZ + z * tabletResolution;
                 Column column = new Column(worldX, worldY, player.level());
                 map[i++] = otherMap.getOrDefault(column, 0);
             }
         }
-        Messages.sendToClient(new MapPacket(map, serverResolution, serverMapRadius, centerX, centerZ, MapOwners.LEGACY), player);
+        Messages.sendToClient(new MapPacket(map, tabletResolution, tabletRadius, centerX, centerZ, MapOwners.LEGACY), player);
     }
 
     public static boolean choose(int x, int z) {
@@ -194,8 +197,14 @@ public class ServerMapRendering {
     public static void writeBlockMapImage(BlockEntity blockEntity) {
         logger.info("Writing to file");
         File output = new File("map.png");
+        float offsetX = 0;
+        float offsetY = 0;
+        if (blockEntity instanceof ScreenBlockEntity screenBlock) {
+            offsetX = screenBlock.offsetX;
+            offsetY = screenBlock.offsetY;
+        }
         try {
-            ImageIO.write(Objects.requireNonNull(generateMapBufferedImage(blockEntity)), "png", output);
+            ImageIO.write(Objects.requireNonNull(generateMapBufferedImage(blockEntity, offsetX, offsetY)), "png", output);
         }
         catch(Exception exception) {
             logger.error("Error in saving file:" + exception);
@@ -204,16 +213,14 @@ public class ServerMapRendering {
     }
 
     public static BufferedImage generateMapBufferedImage(ServerPlayer player) {
-
         Map<Column, Integer> map = otherMap;
-
         try {
             BufferedImage mapImage = new BufferedImage(Config.TABLET_RADIUS.get() * 2 + 1, Config.TABLET_RADIUS.get() * 2 + 1, BufferedImage.TYPE_INT_RGB);
-            int resolution = Config.RESOLUTION.get();
+            int resolution = Config.TABLET_RESOLUTION.get();
 
             for (int x = 0; x < Config.TABLET_RADIUS.get() * 2 + 1; x++) {
                 for (int y = 0; y < Config.TABLET_RADIUS.get() * 2 + 1; y++) {
-                    int colour = map.getOrDefault(new Column((player.getBlockX() / resolution + x - Config.TABLET_RADIUS.get())* resolution, (player.getBlockZ() / resolution + y - Config.TABLET_RADIUS.get()) * resolution, player.level()), 0);
+                    int colour = map.getOrDefault(new Column((player.getBlockX() / resolution + x - Config.TABLET_RADIUS.get()) * resolution, (player.getBlockZ() / resolution + y - Config.TABLET_RADIUS.get()) * resolution, player.level()), 0);
                     mapImage.setRGB(x, y, colour);
                 }
             }
@@ -225,17 +232,19 @@ public class ServerMapRendering {
         }
     }
 
-    public static BufferedImage generateMapBufferedImage(BlockEntity block) {
-
+    public static BufferedImage generateMapBufferedImage(BlockEntity block, float offsetX, float offsetY) {
         Map<Column, Integer> map = otherMap;
-
         try {
-            BufferedImage mapImage = new BufferedImage(Config.TABLET_RADIUS.get() * 2 + 1, Config.TABLET_RADIUS.get() * 2 + 1, BufferedImage.TYPE_INT_RGB);
-            int resolution = Config.RESOLUTION.get();
+            BufferedImage mapImage = new BufferedImage(Config.SCREEN_RADIUS.get() * 2 + 1, Config.SCREEN_RADIUS.get() * 2 + 1, BufferedImage.TYPE_INT_RGB);
+            int resolution = Config.SCREEN_RESOLUTION.get();
 
-            for (int x = 0; x < Config.TABLET_RADIUS.get() * 2 + 1; x++) {
-                for (int y = 0; y < Config.TABLET_RADIUS.get() * 2 + 1; y++) {
-                    Column queriedColumn = new Column((block.getBlockPos().getX() / resolution + x - Config.TABLET_RADIUS.get()) * resolution, (block.getBlockPos().getZ() / resolution + y - Config.TABLET_RADIUS.get()) * resolution, block.getLevel());
+            for (int x = 0; x < Config.SCREEN_RADIUS.get() * 2 + 1; x++) {
+                for (int y = 0; y < Config.SCREEN_RADIUS.get() * 2 + 1; y++) {
+                    Column queriedColumn = new Column(
+                            ((block.getBlockPos().getX() + (int) (Math.ceil(offsetX * ((double) (Config.SCREEN_RADIUS.get() * (resolution * 4)) / 2)))) / resolution + x - Config.SCREEN_RADIUS.get()) * resolution,
+                            ((block.getBlockPos().getZ() + (int) (Math.ceil(offsetY * ((double) (Config.SCREEN_RADIUS.get() * (resolution * 4)) / 2)))) / resolution + y - Config.SCREEN_RADIUS.get()) * resolution,
+                            block.getLevel()
+                    );
                     int colour;
                     colour = map.getOrDefault(queriedColumn, 0);
                     mapImage.setRGB(x, y, colour);

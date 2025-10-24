@@ -63,14 +63,21 @@ public class ScreenBlock extends Block implements EntityBlock {
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_49915_) {
-        p_49915_.add(UP, DOWN, LEFT, RIGHT, FACING);
+    public void onRemove(@NotNull BlockState state, Level level, @NotNull BlockPos blockPos, @NotNull BlockState futureState, boolean p_60519_) {
+        if (state != futureState && state.getBlock() != futureState.getBlock()) {
+            if (!level.isClientSide()) {
+                ScreenBlockEntity blockEntity = (ScreenBlockEntity) level.getBlockEntity(blockPos);
+                assert blockEntity != null;
+                blockEntity.collectiveScreen.removeScreenBlock(blockEntity);
+            } else {
+                BlockMapDataList.removeBlock(blockPos);
+            }
+        }
+        super.onRemove(state, level, blockPos, futureState, p_60519_);
     }
 
     @Override
-    public void onRemove(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos blockPos, @NotNull BlockState futureState, boolean isMoving) {
-        if (state.getBlock() != futureState.getBlock())
-            BlockMapDataList.removeBlock(blockPos);
-        super.onRemove(state, level, blockPos, futureState, isMoving);
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_49915_) {
+        p_49915_.add(UP, DOWN, LEFT, RIGHT, FACING);
     }
 }
