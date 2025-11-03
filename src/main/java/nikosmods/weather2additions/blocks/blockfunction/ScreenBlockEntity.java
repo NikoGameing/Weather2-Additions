@@ -16,6 +16,8 @@ import nikosmods.weather2additions.blocks.blockreg.Blocks;
 import nikosmods.weather2additions.mapdata.BlockMapDataList;
 import nikosmods.weather2additions.mapdata.ServerMapRendering;
 
+import java.util.Objects;
+
 public class ScreenBlockEntity extends CableGenericEntity {
 
     private int refreshNumber;
@@ -38,23 +40,13 @@ public class ScreenBlockEntity extends CableGenericEntity {
             BlockEntity right = level.getBlockEntity(getBlockPos().relative(getBlockState().getValue(ScreenBlock.FACING).getClockWise()));
             connectToSide(level, getBlockPos(), getBlockState(), this, above, ScreenBlock.UP, Direction.UP);
             connectToSide(level, getBlockPos(), getBlockState(), this, below, ScreenBlock.DOWN, Direction.DOWN);
-            if (left != null && left.getBlockState().getBlock() == Blocks.SCREEN_BLOCK.get()) {
-                connectToSide(level, getBlockPos(), getBlockState(), this, left, ScreenBlock.LEFT, left.getBlockState().getValue(ScreenBlock.FACING));
-            }
-            else {
-                setState(getBlockState(), level, getBlockState().setValue(ScreenBlock.LEFT, false), getBlockPos());
-            }
-            if (right != null && right.getBlockState().getBlock() == Blocks.SCREEN_BLOCK.get()) {
-                connectToSide(level, getBlockPos(), getBlockState(), this, right, ScreenBlock.RIGHT, right.getBlockState().getValue(ScreenBlock.FACING));
-            }
-            else {
-                setState(getBlockState(), level, getBlockState().setValue(ScreenBlock.RIGHT, false), getBlockPos());
-            }
-            if (getBlockState().getValue(ScreenBlock.LEFT) && left != null && ((ScreenBlockEntity) left).collectiveScreen != null) {
+            connectToSide(level, getBlockPos(), getBlockState(), this, left, ScreenBlock.LEFT, getBlockState().getValue(ScreenBlock.FACING).getCounterClockWise());
+            connectToSide(level, getBlockPos(), getBlockState(), this, right, ScreenBlock.RIGHT, getBlockState().getValue(ScreenBlock.FACING).getClockWise());
+            if (getBlockState().getValue(ScreenBlock.LEFT) && ((ScreenBlockEntity) Objects.requireNonNull(left)).collectiveScreen != null) {
                 ((ScreenBlockEntity) left).collectiveScreen.addScreenBlock(this);
                 collectiveScreen = ((ScreenBlockEntity) left).collectiveScreen;
             }
-            else if (getBlockState().getValue(ScreenBlock.RIGHT) && right != null && ((ScreenBlockEntity) right).collectiveScreen != null) {
+            else if (getBlockState().getValue(ScreenBlock.RIGHT) && ((ScreenBlockEntity) Objects.requireNonNull(right)).collectiveScreen != null) {
                 ((ScreenBlockEntity) right).collectiveScreen.addScreenBlock(this);
                 collectiveScreen = ((ScreenBlockEntity) right).collectiveScreen;
             }

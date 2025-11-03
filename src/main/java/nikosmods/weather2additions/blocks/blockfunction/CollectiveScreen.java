@@ -40,8 +40,24 @@ public class CollectiveScreen {
         }
         Vec3 centre = new Vec3((double) tBlockPosX / screenBlocks.size(), (double) tBlockPosY / screenBlocks.size(), (double) tBlockPosZ / screenBlocks.size());
         screenBlocks.forEach(screenBlockEntity -> {
-            screenBlockEntity.offsetX = screenBlockEntity.getBlockPos().getX() - (float) centre.x;
-            screenBlockEntity.offsetY = (screenBlockEntity.getBlockPos().getY() - (float) centre.y);
+            switch (screenBlockEntity.getBlockState().getValue(ScreenBlock.FACING)) {
+                case NORTH -> {
+                    screenBlockEntity.offsetX = screenBlockEntity.getBlockPos().getX() - (float) centre.x;
+                    screenBlockEntity.offsetY = -(screenBlockEntity.getBlockPos().getY() - (float) centre.y);
+                }
+                case EAST -> {
+                    screenBlockEntity.offsetY = screenBlockEntity.getBlockPos().getZ() - (float) centre.z;
+                    screenBlockEntity.offsetX = (screenBlockEntity.getBlockPos().getY() - (float) centre.y);
+                }
+                case SOUTH -> {
+                    screenBlockEntity.offsetX = screenBlockEntity.getBlockPos().getX() - (float) centre.x;
+                    screenBlockEntity.offsetY = (screenBlockEntity.getBlockPos().getY() - (float) centre.y);
+                }
+                case WEST -> {
+                    screenBlockEntity.offsetY = (screenBlockEntity.getBlockPos().getZ() - (float) centre.z);
+                    screenBlockEntity.offsetX = -(screenBlockEntity.getBlockPos().getY() - (float) centre.y);
+                }
+            }
         });
     }
 }
